@@ -1,0 +1,53 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dev-debug.log
+
+# Dependency directories
+node_modules/
+
+# Environment variables
+.env
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS specific
+.DS_Store
+
+# Flutter/Dart
+.dart_tool/
+.packages
+.pub/
+build/
+flutter_*.png
+
+# Supabase
+supabase/.env
+supabase/.temp
+supabase/.output
+
+# VSCode
+.vscode/
+
+# Misc
+*.iml
+*.ipr
+*.iws
+*.bak
+*.tmp
+*.orig
+*.swp
+*.lock
+
+# Cursor
+.cursor/mcp.json

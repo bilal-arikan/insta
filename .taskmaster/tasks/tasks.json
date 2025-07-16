@@ -1,0 +1,820 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Proje Yapısı ve Supabase Entegrasyonu",
+        "description": "Flutter projesi oluşturma ve Supabase servislerinin entegrasyonu",
+        "details": "1. Flutter projesi oluştur: `flutter create insta_app`\n2. Supabase hesabı oluştur ve yeni proje başlat\n3. Gerekli paketleri pubspec.yaml'a ekle:\n   - supabase_flutter\n   - flutter_dotenv (çevre değişkenleri için)\n4. .env dosyası oluştur ve Supabase URL ve API anahtarlarını ekle\n5. lib/config/supabase_config.dart dosyası oluştur ve bağlantı ayarlarını yap:\n```dart\nimport 'package:supabase_flutter/supabase_flutter.dart';\nimport 'package:flutter_dotenv/flutter_dotenv.dart';\n\nclass SupabaseConfig {\n  static Future<void> initialize() async {\n    await Supabase.initialize(\n      url: dotenv.env['SUPABASE_URL'] ?? '',\n      anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',\n    );\n  }\n\n  static SupabaseClient get client => Supabase.instance.client;\n}\n```\n6. main.dart dosyasında Supabase'i başlat\n7. Temel klasör yapısını oluştur:\n   - lib/models/\n   - lib/screens/\n   - lib/widgets/\n   - lib/services/\n   - lib/utils/",
+        "testStrategy": "1. Supabase bağlantısını test et: `SupabaseConfig.client` nesnesinin doğru şekilde başlatıldığını doğrula\n2. .env dosyasının doğru yüklendiğini kontrol et\n3. Proje yapısının doğru oluşturulduğunu manuel olarak doğrula",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Flutter Projesi Oluşturma ve Paket Yapılandırması",
+            "description": "Flutter projesini oluşturma ve gerekli paketlerin yapılandırılması",
+            "dependencies": [],
+            "details": "1. Flutter projesi oluştur: `flutter create insta_app`\n2. pubspec.yaml dosyasını düzenleyerek gerekli paketleri ekle:\n   - supabase_flutter: ^1.10.0\n   - flutter_dotenv: ^5.1.0\n   - cached_network_image: ^3.3.0\n   - flutter_secure_storage: ^8.0.0\n3. Paketleri yükle: `flutter pub get`\n4. Temel klasör yapısını oluştur:\n   - lib/models/\n   - lib/screens/\n   - lib/widgets/\n   - lib/services/\n   - lib/utils/\n   - lib/config/",
+            "status": "in-progress",
+            "testStrategy": "1. Projenin doğru oluşturulduğunu kontrol et: `flutter doctor`\n2. Paketlerin doğru yüklendiğini kontrol et: `flutter pub get`\n3. Klasör yapısının doğru oluşturulduğunu manuel olarak doğrula"
+          },
+          {
+            "id": 2,
+            "title": "Supabase Hesabı ve Proje Yapılandırması",
+            "description": "Supabase hesabı oluşturma, proje başlatma ve bağlantı ayarlarını yapılandırma",
+            "dependencies": [
+              1
+            ],
+            "details": "1. Supabase hesabı oluştur (https://supabase.com)\n2. Yeni bir Supabase projesi başlat\n3. Proje URL ve API anahtarlarını al\n4. Proje kök dizininde .env dosyası oluştur ve anahtarları ekle:\n   ```\n   SUPABASE_URL=https://your-project-url.supabase.co\n   SUPABASE_ANON_KEY=your-anon-key\n   ```\n5. .gitignore dosyasına .env ekleyerek güvenliği sağla",
+            "status": "pending",
+            "testStrategy": "1. Supabase projesinin doğru oluşturulduğunu kontrol et\n2. .env dosyasının doğru formatta olduğunu kontrol et\n3. .gitignore dosyasının .env dosyasını içerdiğini doğrula"
+          },
+          {
+            "id": 3,
+            "title": "Supabase Konfigürasyon Sınıfı Oluşturma",
+            "description": "Supabase bağlantısını yönetecek konfigürasyon sınıfını oluşturma",
+            "dependencies": [
+              2
+            ],
+            "details": "1. lib/config/supabase_config.dart dosyasını oluştur:\n```dart\nimport 'package:supabase_flutter/supabase_flutter.dart';\nimport 'package:flutter_dotenv/flutter_dotenv.dart';\n\nclass SupabaseConfig {\n  static Future<void> initialize() async {\n    await dotenv.load();\n    await Supabase.initialize(\n      url: dotenv.env['SUPABASE_URL'] ?? '',\n      anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',\n    );\n  }\n\n  static SupabaseClient get client => Supabase.instance.client;\n}\n```\n2. main.dart dosyasını düzenleyerek Supabase'i başlat:\n```dart\nimport 'package:flutter/material.dart';\nimport 'package:insta_app/config/supabase_config.dart';\n\nvoid main() async {\n  WidgetsFlutterBinding.ensureInitialized();\n  await SupabaseConfig.initialize();\n  runApp(MyApp());\n}\n```",
+            "status": "pending",
+            "testStrategy": "1. Supabase bağlantısını test et: `SupabaseConfig.client` nesnesinin doğru şekilde başlatıldığını doğrula\n2. .env dosyasının doğru yüklendiğini kontrol et\n3. Uygulama başlatılırken hata oluşmadığını doğrula"
+          },
+          {
+            "id": 4,
+            "title": "Hata Yönetimi Sınıfı Oluşturma",
+            "description": "Uygulama genelinde kullanılacak hata yönetimi mekanizmasını oluşturma",
+            "dependencies": [
+              3
+            ],
+            "details": "1. lib/utils/error_handler.dart dosyasını oluştur:\n```dart\nimport 'package:flutter/material.dart';\nimport 'package:supabase_flutter/supabase_flutter.dart';\n\nclass ErrorHandler {\n  static void showError(BuildContext context, String message) {\n    ScaffoldMessenger.of(context).showSnackBar(\n      SnackBar(\n        content: Text(message),\n        backgroundColor: Colors.red,\n      ),\n    );\n  }\n\n  static String handleException(dynamic error) {\n    if (error is PostgrestException) {\n      return error.message ?? 'Veritabanı hatası';\n    } else if (error is AuthException) {\n      return error.message;\n    } else {\n      return error.toString();\n    }\n  }\n\n  static void handleApiError(BuildContext context, dynamic error) {\n    final errorMessage = handleException(error);\n    showError(context, errorMessage);\n  }\n}\n```\n2. Uygulama genelinde bu sınıfı kullanarak hata yönetimini standartlaştır",
+            "status": "pending",
+            "testStrategy": "1. Farklı hata türleriyle handleException metodunu test et\n2. showError metodunun UI'da doğru şekilde hata gösterdiğini doğrula\n3. Supabase hatalarının doğru şekilde yakalanıp işlendiğini test et"
+          },
+          {
+            "id": 5,
+            "title": "Temel Servis Sınıfı Oluşturma",
+            "description": "Supabase ile iletişim kuracak temel servis sınıfını oluşturma",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "1. lib/services/base_service.dart dosyasını oluştur:\n```dart\nimport 'package:supabase_flutter/supabase_flutter.dart';\nimport '../config/supabase_config.dart';\n\nclass BaseService {\n  final SupabaseClient _supabase = SupabaseConfig.client;\n  \n  SupabaseClient get supabase => _supabase;\n  \n  // Kullanıcı ID'sini alma yardımcı metodu\n  String? get currentUserId => _supabase.auth.currentUser?.id;\n  \n  // Kullanıcının oturum açıp açmadığını kontrol etme\n  bool get isAuthenticated => _supabase.auth.currentUser != null;\n  \n  // Oturum değişikliklerini dinleme\n  Stream<AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;\n}\n```\n2. Bu sınıfı diğer servis sınıfları için temel olarak kullan (AuthService, PostService vb.)",
+            "status": "pending",
+            "testStrategy": "1. BaseService sınıfının Supabase istemcisine doğru şekilde eriştiğini test et\n2. currentUserId ve isAuthenticated metodlarının doğru değerleri döndürdüğünü kontrol et\n3. authStateChanges stream'inin oturum değişikliklerini doğru şekilde yayınladığını doğrula"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Veritabanı Şeması Oluşturma",
+        "description": "Supabase üzerinde gerekli tabloları ve ilişkileri oluşturma",
+        "details": "Supabase SQL Editor'ü kullanarak aşağıdaki tabloları oluştur:\n\n1. users tablosu:\n```sql\nCREATE TABLE users (\n  id UUID REFERENCES auth.users PRIMARY KEY,\n  username TEXT UNIQUE NOT NULL,\n  full_name TEXT,\n  avatar_url TEXT,\n  bio TEXT,\n  website TEXT,\n  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),\n  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()\n);\n```\n\n2. posts tablosu:\n```sql\nCREATE TABLE posts (\n  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),\n  user_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,\n  caption TEXT,\n  image_url TEXT NOT NULL,\n  location TEXT,\n  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()\n);\n```\n\n3. comments tablosu:\n```sql\nCREATE TABLE comments (\n  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),\n  post_id UUID REFERENCES posts(id) ON DELETE CASCADE NOT NULL,\n  user_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,\n  content TEXT NOT NULL,\n  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()\n);\n```\n\n4. likes tablosu:\n```sql\nCREATE TABLE likes (\n  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),\n  post_id UUID REFERENCES posts(id) ON DELETE CASCADE NOT NULL,\n  user_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,\n  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),\n  UNIQUE(post_id, user_id)\n);\n```\n\n5. follows tablosu:\n```sql\nCREATE TABLE follows (\n  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),\n  follower_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,\n  following_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,\n  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),\n  UNIQUE(follower_id, following_id)\n);\n```\n\n6. notifications tablosu:\n```sql\nCREATE TABLE notifications (\n  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),\n  user_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,\n  actor_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,\n  type TEXT NOT NULL,\n  post_id UUID REFERENCES posts(id) ON DELETE CASCADE,\n  comment_id UUID REFERENCES comments(id) ON DELETE CASCADE,\n  is_read BOOLEAN DEFAULT FALSE,\n  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()\n);\n```\n\n7. Supabase RLS (Row Level Security) politikalarını ayarla",
+        "testStrategy": "1. Her tablonun doğru oluşturulduğunu Supabase Dashboard üzerinden kontrol et\n2. Test verileri ekleyerek ilişkilerin doğru çalıştığını doğrula\n3. RLS politikalarının beklenen şekilde çalıştığını test et",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Kullanıcı Tablosu ve Profil Yönetimi Şeması Oluşturma",
+            "description": "Supabase SQL Editor'ü kullanarak users tablosunu ve ilgili RLS politikalarını oluşturma",
+            "dependencies": [],
+            "details": "1. Supabase Dashboard'a giriş yap ve SQL Editor'ü aç\n2. users tablosunu oluştur:\n```sql\nCREATE TABLE users (\n  id UUID REFERENCES auth.users PRIMARY KEY,\n  username TEXT UNIQUE NOT NULL,\n  full_name TEXT,\n  avatar_url TEXT,\n  bio TEXT,\n  website TEXT,\n  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),\n  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()\n);\n```\n3. users tablosu için RLS politikalarını ayarla:\n```sql\n-- Herkes profilleri görüntüleyebilir\nCREATE POLICY \"Users are viewable by everyone.\"\n  ON users FOR SELECT\n  USING (true);\n\n-- Kullanıcılar sadece kendi profillerini düzenleyebilir\nCREATE POLICY \"Users can update their own profile.\"\n  ON users FOR UPDATE\n  USING (auth.uid() = id);\n```\n4. Tabloyu etkinleştir ve RLS'yi aç",
+            "status": "pending",
+            "testStrategy": "1. Supabase Dashboard'dan users tablosunun doğru oluşturulduğunu kontrol et\n2. Test kullanıcısı oluşturarak tabloya veri eklendiğini doğrula\n3. RLS politikalarının doğru çalıştığını test et: farklı kullanıcılarla giriş yaparak profil düzenleme işlemlerini dene"
+          },
+          {
+            "id": 2,
+            "title": "İçerik ve Etkileşim Tablolarını Oluşturma",
+            "description": "Supabase SQL Editor'ü kullanarak posts, comments ve likes tablolarını ve ilgili RLS politikalarını oluşturma",
+            "dependencies": [
+              1
+            ],
+            "details": "1. posts tablosunu oluştur:\n```sql\nCREATE TABLE posts (\n  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),\n  user_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,\n  caption TEXT,\n  image_url TEXT NOT NULL,\n  location TEXT,\n  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()\n);\n```\n\n2. comments tablosunu oluştur:\n```sql\nCREATE TABLE comments (\n  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),\n  post_id UUID REFERENCES posts(id) ON DELETE CASCADE NOT NULL,\n  user_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,\n  content TEXT NOT NULL,\n  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()\n);\n```\n\n3. likes tablosunu oluştur:\n```sql\nCREATE TABLE likes (\n  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),\n  post_id UUID REFERENCES posts(id) ON DELETE CASCADE NOT NULL,\n  user_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,\n  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),\n  UNIQUE(post_id, user_id)\n);\n```\n\n4. Bu tablolar için RLS politikalarını ayarla:\n```sql\n-- Herkes gönderileri görüntüleyebilir\nCREATE POLICY \"Posts are viewable by everyone.\"\n  ON posts FOR SELECT\n  USING (true);\n\n-- Kullanıcılar sadece kendi gönderilerini düzenleyebilir/silebilir\nCREATE POLICY \"Users can insert their own posts.\"\n  ON posts FOR INSERT\n  WITH CHECK (auth.uid() = user_id);\n\nCREATE POLICY \"Users can update their own posts.\"\n  ON posts FOR UPDATE\n  USING (auth.uid() = user_id);\n\nCREATE POLICY \"Users can delete their own posts.\"\n  ON posts FOR DELETE\n  USING (auth.uid() = user_id);\n```\n\n5. Benzer RLS politikalarını comments ve likes tabloları için de oluştur",
+            "status": "pending",
+            "testStrategy": "1. Her tablonun doğru oluşturulduğunu Supabase Dashboard üzerinden kontrol et\n2. Test verileri ekleyerek ilişkilerin doğru çalıştığını doğrula\n3. Yabancı anahtar kısıtlamalarının çalıştığını test et (örn. bir gönderi silindiğinde ilgili yorumların da silinmesi)\n4. RLS politikalarının beklenen şekilde çalıştığını test et"
+          },
+          {
+            "id": 3,
+            "title": "Sosyal Ağ ve Bildirim Tablolarını Oluşturma",
+            "description": "Supabase SQL Editor'ü kullanarak follows ve notifications tablolarını ve ilgili RLS politikalarını oluşturma",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "1. follows tablosunu oluştur:\n```sql\nCREATE TABLE follows (\n  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),\n  follower_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,\n  following_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,\n  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),\n  UNIQUE(follower_id, following_id)\n);\n```\n\n2. notifications tablosunu oluştur:\n```sql\nCREATE TABLE notifications (\n  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),\n  user_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,\n  actor_id UUID REFERENCES users(id) ON DELETE CASCADE NOT NULL,\n  type TEXT NOT NULL,\n  post_id UUID REFERENCES posts(id) ON DELETE CASCADE,\n  comment_id UUID REFERENCES comments(id) ON DELETE CASCADE,\n  is_read BOOLEAN DEFAULT FALSE,\n  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()\n);\n```\n\n3. follows tablosu için RLS politikalarını ayarla:\n```sql\n-- Herkes takip ilişkilerini görüntüleyebilir\nCREATE POLICY \"Follows are viewable by everyone.\"\n  ON follows FOR SELECT\n  USING (true);\n\n-- Kullanıcılar sadece kendi takip işlemlerini yapabilir\nCREATE POLICY \"Users can follow/unfollow.\"\n  ON follows FOR INSERT\n  WITH CHECK (auth.uid() = follower_id);\n\nCREATE POLICY \"Users can delete their own follows.\"\n  ON follows FOR DELETE\n  USING (auth.uid() = follower_id);\n```\n\n4. notifications tablosu için RLS politikalarını ayarla:\n```sql\n-- Kullanıcılar sadece kendi bildirimlerini görüntüleyebilir\nCREATE POLICY \"Users can view their own notifications.\"\n  ON notifications FOR SELECT\n  USING (auth.uid() = user_id);\n\n-- Bildirimler sistem tarafından oluşturulur (herkes ekleyebilir)\nCREATE POLICY \"Notifications can be created by anyone.\"\n  ON notifications FOR INSERT\n  WITH CHECK (true);\n\n-- Kullanıcılar sadece kendi bildirimlerini güncelleyebilir (okundu olarak işaretleme)\nCREATE POLICY \"Users can update their own notifications.\"\n  ON notifications FOR UPDATE\n  USING (auth.uid() = user_id);\n```",
+            "status": "pending",
+            "testStrategy": "1. follows ve notifications tablolarının doğru oluşturulduğunu kontrol et\n2. Takip etme/takipten çıkma işlemlerinin unique kısıtlamasını test et\n3. Bildirim oluşturma ve güncelleme işlemlerini test et\n4. RLS politikalarının doğru çalıştığını doğrula: kullanıcıların sadece kendi bildirimlerini görebildiğini test et"
+          },
+          {
+            "id": 4,
+            "title": "Veritabanı İndekslerini Oluşturma",
+            "description": "Performansı artırmak için gerekli indeksleri oluşturma",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "1. Sık sorgulanan sütunlar için indeksler oluştur:\n```sql\n-- users tablosu için username indeksi (zaten UNIQUE kısıtlaması var)\n\n-- posts tablosu için user_id indeksi\nCREATE INDEX idx_posts_user_id ON posts(user_id);\n\n-- comments tablosu için post_id ve user_id indeksleri\nCREATE INDEX idx_comments_post_id ON comments(post_id);\nCREATE INDEX idx_comments_user_id ON comments(user_id);\n\n-- likes tablosu için post_id ve user_id indeksleri\nCREATE INDEX idx_likes_post_id ON likes(post_id);\nCREATE INDEX idx_likes_user_id ON likes(user_id);\n\n-- follows tablosu için follower_id ve following_id indeksleri\nCREATE INDEX idx_follows_follower_id ON follows(follower_id);\nCREATE INDEX idx_follows_following_id ON follows(following_id);\n\n-- notifications tablosu için user_id ve created_at indeksleri\nCREATE INDEX idx_notifications_user_id ON notifications(user_id);\nCREATE INDEX idx_notifications_created_at ON notifications(created_at);\n```\n\n2. Tarih sütunları için indeksler oluştur (zaman sıralaması için):\n```sql\nCREATE INDEX idx_posts_created_at ON posts(created_at DESC);\nCREATE INDEX idx_comments_created_at ON comments(created_at DESC);\n```",
+            "status": "pending",
+            "testStrategy": "1. İndekslerin doğru oluşturulduğunu Supabase Dashboard üzerinden kontrol et\n2. Büyük veri setleriyle sorguların performansını test et\n3. EXPLAIN ANALYZE komutunu kullanarak sorguların indeksleri kullandığını doğrula"
+          },
+          {
+            "id": 5,
+            "title": "Veritabanı Tetikleyicileri (Triggers) Oluşturma",
+            "description": "Otomatik işlemler için gerekli tetikleyicileri oluşturma",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "1. Kullanıcı oluşturulduğunda users tablosuna otomatik kayıt eklemek için fonksiyon ve tetikleyici oluştur:\n```sql\nCREATE OR REPLACE FUNCTION public.handle_new_user()\nRETURNS TRIGGER AS $$\nBEGIN\n  INSERT INTO public.users (id, username, full_name, avatar_url)\n  VALUES (new.id, new.raw_user_meta_data->>'username', new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'avatar_url');\n  RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql SECURITY DEFINER;\n\nCREATE TRIGGER on_auth_user_created\n  AFTER INSERT ON auth.users\n  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();\n```\n\n2. Beğeni eklendiğinde bildirim oluşturmak için tetikleyici oluştur:\n```sql\nCREATE OR REPLACE FUNCTION public.handle_new_like()\nRETURNS TRIGGER AS $$\nBEGIN\n  -- Kendi gönderisini beğendiğinde bildirim oluşturma\n  IF NEW.user_id <> (SELECT user_id FROM posts WHERE id = NEW.post_id) THEN\n    INSERT INTO public.notifications (user_id, actor_id, type, post_id)\n    VALUES (\n      (SELECT user_id FROM posts WHERE id = NEW.post_id),\n      NEW.user_id,\n      'like',\n      NEW.post_id\n    );\n  END IF;\n  RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql SECURITY DEFINER;\n\nCREATE TRIGGER on_new_like\n  AFTER INSERT ON public.likes\n  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_like();\n```\n\n3. Yorum eklendiğinde bildirim oluşturmak için tetikleyici oluştur:\n```sql\nCREATE OR REPLACE FUNCTION public.handle_new_comment()\nRETURNS TRIGGER AS $$\nBEGIN\n  -- Kendi gönderisine yorum yaptığında bildirim oluşturma\n  IF NEW.user_id <> (SELECT user_id FROM posts WHERE id = NEW.post_id) THEN\n    INSERT INTO public.notifications (user_id, actor_id, type, post_id, comment_id)\n    VALUES (\n      (SELECT user_id FROM posts WHERE id = NEW.post_id),\n      NEW.user_id,\n      'comment',\n      NEW.post_id,\n      NEW.id\n    );\n  END IF;\n  RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql SECURITY DEFINER;\n\nCREATE TRIGGER on_new_comment\n  AFTER INSERT ON public.comments\n  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_comment();\n```\n\n4. Takip edildiğinde bildirim oluşturmak için tetikleyici oluştur:\n```sql\nCREATE OR REPLACE FUNCTION public.handle_new_follow()\nRETURNS TRIGGER AS $$\nBEGIN\n  INSERT INTO public.notifications (user_id, actor_id, type)\n  VALUES (\n    NEW.following_id,\n    NEW.follower_id,\n    'follow'\n  );\n  RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql SECURITY DEFINER;\n\nCREATE TRIGGER on_new_follow\n  AFTER INSERT ON public.follows\n  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_follow();\n```",
+            "status": "pending",
+            "testStrategy": "1. Tetikleyicilerin doğru oluşturulduğunu kontrol et\n2. Yeni kullanıcı kaydı oluşturarak users tablosuna otomatik kayıt eklendiğini doğrula\n3. Beğeni, yorum ve takip işlemleri yaparak ilgili bildirimlerin otomatik oluştuğunu test et\n4. Kendi gönderisine beğeni/yorum yapıldığında bildirim oluşmadığını doğrula"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Kimlik Doğrulama Sistemi",
+        "description": "Kullanıcı kayıt, giriş ve profil yönetimi işlevlerini oluşturma",
+        "details": "1. lib/services/auth_service.dart dosyası oluştur:\n```dart\nimport 'package:supabase_flutter/supabase_flutter.dart';\nimport '../config/supabase_config.dart';\n\nclass AuthService {\n  final _supabase = SupabaseConfig.client;\n\n  Future<AuthResponse> signUp(String email, String password, String username) async {\n    final response = await _supabase.auth.signUp(\n      email: email,\n      password: password,\n    );\n    \n    if (response.user != null) {\n      await _supabase.from('users').insert({\n        'id': response.user!.id,\n        'username': username,\n        'created_at': DateTime.now().toIso8601String(),\n      });\n    }\n    \n    return response;\n  }\n\n  Future<AuthResponse> signIn(String email, String password) async {\n    return await _supabase.auth.signInWithPassword(\n      email: email,\n      password: password,\n    );\n  }\n\n  Future<void> signOut() async {\n    await _supabase.auth.signOut();\n  }\n\n  User? get currentUser => _supabase.auth.currentUser;\n\n  Stream<AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;\n}\n```\n\n2. lib/models/user_model.dart dosyası oluştur:\n```dart\nclass UserModel {\n  final String id;\n  final String username;\n  final String? fullName;\n  final String? avatarUrl;\n  final String? bio;\n  final String? website;\n  final DateTime createdAt;\n\n  UserModel({\n    required this.id,\n    required this.username,\n    this.fullName,\n    this.avatarUrl,\n    this.bio,\n    this.website,\n    required this.createdAt,\n  });\n\n  factory UserModel.fromJson(Map<String, dynamic> json) {\n    return UserModel(\n      id: json['id'],\n      username: json['username'],\n      fullName: json['full_name'],\n      avatarUrl: json['avatar_url'],\n      bio: json['bio'],\n      website: json['website'],\n      createdAt: DateTime.parse(json['created_at']),\n    );\n  }\n}\n```\n\n3. lib/screens/auth/login_screen.dart ve register_screen.dart dosyalarını oluştur\n4. lib/screens/auth/profile_edit_screen.dart dosyasını oluştur\n5. Kimlik doğrulama durumunu yönetmek için Provider veya Riverpod kullan",
+        "testStrategy": "1. Kayıt işlemini test et: Geçerli ve geçersiz verilerle kayıt işlemini dene\n2. Giriş işlemini test et: Doğru ve yanlış kimlik bilgileriyle giriş yapmayı dene\n3. Profil düzenleme işlevini test et\n4. Oturum kapatma işlevini test et\n5. Kimlik doğrulama durumu değişikliklerini test et",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Login Screen UI and Logic",
+            "description": "Create the login screen with email and password fields, validation, and integration with AuthService",
+            "dependencies": [],
+            "details": "1. Create lib/screens/auth/login_screen.dart\n2. Design UI with email and password TextFormFields\n3. Add validation for input fields\n4. Implement login button with loading state\n5. Connect to AuthService.signIn method\n6. Handle error messages and success navigation\n7. Add 'Register' link to navigate to registration screen",
+            "status": "pending",
+            "testStrategy": "Test with valid credentials, invalid credentials, empty fields, and network errors. Verify navigation to home screen on success."
+          },
+          {
+            "id": 2,
+            "title": "Implement Registration Screen UI and Logic",
+            "description": "Create the registration screen with email, username, password fields, validation, and integration with AuthService",
+            "dependencies": [
+              1
+            ],
+            "details": "1. Create lib/screens/auth/register_screen.dart\n2. Design UI with email, username, and password TextFormFields\n3. Add validation for all input fields\n4. Implement register button with loading state\n5. Connect to AuthService.signUp method\n6. Handle error messages and success navigation\n7. Add 'Login' link to navigate back to login screen",
+            "status": "pending",
+            "testStrategy": "Test registration with valid inputs, duplicate email/username, password strength requirements, and verify user creation in database."
+          },
+          {
+            "id": 3,
+            "title": "Create Profile Edit Screen",
+            "description": "Implement the profile editing functionality allowing users to update their profile information",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "1. Create lib/screens/auth/profile_edit_screen.dart\n2. Design UI with fields for fullName, bio, website, and avatar upload\n3. Pre-populate fields with existing user data\n4. Implement image picker for avatar selection\n5. Add update functionality to save changes to Supabase\n6. Create method in AuthService to update user profile\n7. Handle success and error states",
+            "status": "pending",
+            "testStrategy": "Test updating each field individually and all together. Verify image upload works correctly. Check that changes persist after logout and login."
+          },
+          {
+            "id": 4,
+            "title": "Implement Auth State Management",
+            "description": "Create a state management solution using Provider or Riverpod to track and respond to authentication state changes",
+            "dependencies": [
+              1,
+              2,
+              3
+            ],
+            "details": "1. Create lib/providers/auth_provider.dart\n2. Implement AuthProvider class that listens to AuthService.authStateChanges\n3. Add methods to access currentUser, isAuthenticated, and loading states\n4. Create methods to handle login, registration, and logout\n5. Wrap the app with ChangeNotifierProvider in main.dart\n6. Implement automatic navigation based on auth state\n7. Add persistence for auth state across app restarts",
+            "status": "pending",
+            "testStrategy": "Test auth state transitions (logged out → logging in → logged in → logging out). Verify UI updates correctly based on auth state. Test persistence across app restarts."
+          },
+          {
+            "id": 5,
+            "title": "Create User Profile Screen",
+            "description": "Implement the user profile screen to display user information and provide access to profile editing",
+            "dependencies": [
+              3,
+              4
+            ],
+            "details": "1. Create lib/screens/auth/profile_screen.dart\n2. Design UI to display username, avatar, bio, website, and other user details\n3. Add edit profile button that navigates to profile_edit_screen\n4. Implement sign out functionality\n5. Display user statistics (to be connected with future tasks)\n6. Add navigation to this screen from app drawer/bottom navigation\n7. Implement refresh functionality to update profile data",
+            "status": "pending",
+            "testStrategy": "Test profile display with various user data configurations. Verify navigation to edit screen works. Test sign out functionality and confirm auth state changes correctly."
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Ana Ekran ve Feed Oluşturma",
+        "description": "Kullanıcının takip ettiği kişilerin gönderilerini gösteren ana feed ekranını oluşturma",
+        "details": "1. lib/services/post_service.dart dosyası oluştur:\n```dart\nimport '../config/supabase_config.dart';\nimport '../models/post_model.dart';\n\nclass PostService {\n  final _supabase = SupabaseConfig.client;\n\n  Future<List<PostModel>> getFeedPosts() async {\n    final user = _supabase.auth.currentUser;\n    if (user == null) return [];\n\n    // Kullanıcının takip ettiği kişilerin gönderilerini getir\n    final response = await _supabase\n      .from('posts')\n      .select('''\n        *,\n        users:user_id(*),\n        likes:likes(user_id),\n        comments:comments(count)\n      ''')\n      .in_('user_id', [\n        // Kullanıcının kendi gönderileri\n        user.id,\n        // Takip edilen kullanıcıların gönderileri\n        ...await _getFollowingIds(user.id),\n      ])\n      .order('created_at', ascending: false);\n\n    return (response as List).map((post) => PostModel.fromJson(post)).toList();\n  }\n\n  Future<List<String>> _getFollowingIds(String userId) async {\n    final response = await _supabase\n      .from('follows')\n      .select('following_id')\n      .eq('follower_id', userId);\n\n    return (response as List).map((item) => item['following_id'] as String).toList();\n  }\n}\n```\n\n2. lib/models/post_model.dart dosyası oluştur:\n```dart\nimport 'user_model.dart';\n\nclass PostModel {\n  final String id;\n  final String userId;\n  final UserModel user;\n  final String imageUrl;\n  final String? caption;\n  final String? location;\n  final DateTime createdAt;\n  final int likesCount;\n  final int commentsCount;\n  final bool isLikedByCurrentUser;\n\n  PostModel({\n    required this.id,\n    required this.userId,\n    required this.user,\n    required this.imageUrl,\n    this.caption,\n    this.location,\n    required this.createdAt,\n    required this.likesCount,\n    required this.commentsCount,\n    required this.isLikedByCurrentUser,\n  });\n\n  factory PostModel.fromJson(Map<String, dynamic> json) {\n    return PostModel(\n      id: json['id'],\n      userId: json['user_id'],\n      user: UserModel.fromJson(json['users']),\n      imageUrl: json['image_url'],\n      caption: json['caption'],\n      location: json['location'],\n      createdAt: DateTime.parse(json['created_at']),\n      likesCount: (json['likes'] as List).length,\n      commentsCount: json['comments'][0]['count'],\n      isLikedByCurrentUser: (json['likes'] as List).any(\n        (like) => like['user_id'] == SupabaseConfig.client.auth.currentUser?.id\n      ),\n    );\n  }\n}\n```\n\n3. lib/screens/home/feed_screen.dart dosyası oluştur\n4. lib/widgets/post_card.dart widget'ını oluştur\n5. Infinite scroll için pagination ekle\n6. Pull-to-refresh özelliği ekle",
+        "testStrategy": "1. Feed verilerinin doğru şekilde yüklendiğini test et\n2. Gönderi kartının tüm bileşenlerinin doğru görüntülendiğini kontrol et\n3. Infinite scroll ve pull-to-refresh özelliklerini test et\n4. Farklı ekran boyutlarında responsive tasarımı test et",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Feed Screen UI Oluşturma",
+            "description": "Ana ekran için temel UI yapısını oluşturma ve post_service.dart ile entegre etme",
+            "dependencies": [],
+            "details": "1. lib/screens/home/feed_screen.dart dosyasını oluştur\n2. StatefulWidget olarak FeedScreen sınıfını tanımla\n3. PostService sınıfını kullanarak getFeedPosts() metodunu çağır\n4. Gelen verileri ListView.builder içinde göster\n5. Yükleme durumu için CircularProgressIndicator ekle\n6. Hata durumları için error handling ekle",
+            "status": "pending",
+            "testStrategy": "1. Ekranın doğru şekilde yüklendiğini kontrol et\n2. PostService'den veri çekme işleminin başarılı olduğunu doğrula\n3. Yükleme ve hata durumlarının doğru gösterildiğini test et"
+          },
+          {
+            "id": 2,
+            "title": "Post Card Widget Oluşturma",
+            "description": "Gönderi kartı widget'ını oluşturarak kullanıcı bilgileri, gönderi içeriği ve etkileşim butonlarını gösterme",
+            "dependencies": [],
+            "details": "1. lib/widgets/post_card.dart dosyasını oluştur\n2. PostCard sınıfını StatefulWidget olarak tanımla\n3. Kullanıcı profil resmi, kullanıcı adı ve konum bilgilerini içeren üst bölümü oluştur\n4. Gönderi resmini göstermek için Image widget'ını kullan\n5. Beğenme, yorum yapma ve paylaşma butonlarını ekle\n6. Beğeni sayısı, açıklama ve yorumları gösteren alt bölümü oluştur\n7. Beğenme işlevi için gerekli metotları ekle",
+            "status": "pending",
+            "testStrategy": "1. Tüm gönderi bilgilerinin doğru şekilde gösterildiğini kontrol et\n2. Beğenme butonunun çalıştığını ve durumunun güncellendiğini test et\n3. Farklı içerik türleri (resim, açıklama, konum) ile widget'ın doğru çalıştığını doğrula"
+          },
+          {
+            "id": 3,
+            "title": "Infinite Scroll İmplementasyonu",
+            "description": "Kullanıcı feed'in sonuna geldiğinde daha fazla gönderi yüklemek için pagination özelliği ekleme",
+            "dependencies": [],
+            "details": "1. PostService sınıfına pagination parametreleri ekle:\n```dart\nFuture<List<PostModel>> getFeedPosts({int limit = 10, int offset = 0}) async {\n  // Mevcut kodu güncelle ve limit/offset parametrelerini ekle\n  // ...\n  .range(offset, offset + limit - 1)\n}\n```\n2. FeedScreen'de scroll kontrolü için ScrollController ekle\n3. Scroll listener ekleyerek kullanıcı listenin sonuna geldiğinde yeni veri yükle\n4. Yükleme durumunu göstermek için liste sonuna loading indicator ekle\n5. Yeni verileri mevcut listeye ekle",
+            "status": "pending",
+            "testStrategy": "1. Scroll işleminin sonunda yeni verilerin yüklendiğini doğrula\n2. Yükleme göstergesinin doğru zamanda gösterildiğini kontrol et\n3. Verilerin doğru sırayla eklendiğini test et"
+          },
+          {
+            "id": 4,
+            "title": "Pull-to-Refresh Özelliği Ekleme",
+            "description": "Kullanıcının feed'i aşağı çekerek yenileyebilmesi için pull-to-refresh özelliği ekleme",
+            "dependencies": [],
+            "details": "1. FeedScreen widget'ında RefreshIndicator widget'ını kullan\n2. onRefresh callback'i içinde verileri yeniden yükle:\n```dart\nFuture<void> _refreshFeed() async {\n  setState(() {\n    _posts = [];\n    _isLoading = true;\n    _currentPage = 0;\n  });\n  await _loadPosts();\n}\n```\n3. Yenileme işlemi sırasında uygun bir yükleme göstergesi göster\n4. Yenileme tamamlandığında kullanıcıya görsel geri bildirim sağla",
+            "status": "pending",
+            "testStrategy": "1. Aşağı çekme hareketinin refresh işlemini tetiklediğini doğrula\n2. Yenileme sırasında verilerin doğru şekilde sıfırlandığını kontrol et\n3. Yenileme sonrası en güncel verilerin gösterildiğini test et"
+          },
+          {
+            "id": 5,
+            "title": "Post Etkileşimleri İmplementasyonu",
+            "description": "Gönderilerle etkileşim kurma (beğenme, yorum yapma) işlevselliğini ekleme",
+            "dependencies": [],
+            "details": "1. PostService sınıfına beğenme ve beğeniyi geri alma metotları ekle:\n```dart\nFuture<void> likePost(String postId) async {\n  final user = _supabase.auth.currentUser;\n  if (user == null) return;\n  \n  await _supabase.from('likes').insert({\n    'user_id': user.id,\n    'post_id': postId\n  });\n}\n\nFuture<void> unlikePost(String postId) async {\n  final user = _supabase.auth.currentUser;\n  if (user == null) return;\n  \n  await _supabase\n    .from('likes')\n    .delete()\n    .match({'user_id': user.id, 'post_id': postId});\n}\n```\n2. PostCard widget'ında beğenme butonuna tıklama işlevini ekle\n3. Beğeni durumuna göre buton görünümünü güncelle\n4. Yorum yapma için yorum ekranına yönlendirme ekle\n5. Beğeni ve yorum sayılarını gerçek zamanlı güncelle",
+            "status": "pending",
+            "testStrategy": "1. Beğenme ve beğeniyi geri alma işlemlerinin veritabanında doğru şekilde güncellendiğini kontrol et\n2. Beğeni sayısının ve buton durumunun UI'da doğru güncellendiğini test et\n3. Yorum yapma yönlendirmesinin doğru çalıştığını doğrula"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Gönderi Oluşturma ve Paylaşma",
+        "description": "Kullanıcıların fotoğraf/video seçip düzenleyerek paylaşabilecekleri işlevselliği oluşturma",
+        "details": "1. Gerekli paketleri ekle:\n   - image_picker\n   - image_cropper\n   - path_provider\n\n2. lib/services/storage_service.dart dosyası oluştur:\n```dart\nimport 'dart:io';\nimport 'package:path/path.dart' as path;\nimport '../config/supabase_config.dart';\n\nclass StorageService {\n  final _supabase = SupabaseConfig.client;\n\n  Future<String> uploadImage(File file, String folder) async {\n    final user = _supabase.auth.currentUser;\n    if (user == null) throw Exception('User not authenticated');\n    \n    final fileExt = path.extension(file.path);\n    final fileName = '${DateTime.now().millisecondsSinceEpoch}$fileExt';\n    final filePath = '$folder/${user.id}/$fileName';\n    \n    await _supabase.storage.from('media').upload(filePath, file);\n    \n    return _supabase.storage.from('media').getPublicUrl(filePath);\n  }\n}\n```\n\n3. lib/services/post_service.dart'a gönderi oluşturma metodu ekle:\n```dart\nFuture<void> createPost(File imageFile, String? caption, String? location) async {\n  final user = _supabase.auth.currentUser;\n  if (user == null) throw Exception('User not authenticated');\n  \n  // Upload image\n  final storageService = StorageService();\n  final imageUrl = await storageService.uploadImage(imageFile, 'posts');\n  \n  // Create post\n  await _supabase.from('posts').insert({\n    'user_id': user.id,\n    'image_url': imageUrl,\n    'caption': caption,\n    'location': location,\n    'created_at': DateTime.now().toIso8601String(),\n  });\n}\n```\n\n4. lib/screens/create_post/image_picker_screen.dart dosyası oluştur\n5. lib/screens/create_post/image_filter_screen.dart dosyası oluştur\n6. lib/screens/create_post/post_caption_screen.dart dosyası oluştur\n7. Basit filtre efektleri ekle (kontrast, parlaklık, siyah-beyaz vb.)\n8. Konum seçimi için Google Places API entegrasyonu ekle",
+        "testStrategy": "1. Fotoğraf seçme ve kırpma işlevlerini test et\n2. Filtre uygulamanın doğru çalıştığını kontrol et\n3. Supabase Storage'a dosya yükleme işlemini test et\n4. Gönderi oluşturma işleminin veritabanına doğru kaydedildiğini doğrula\n5. Konum seçiminin doğru çalıştığını test et",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Medya Seçme Ekranı Oluşturma",
+            "description": "Kullanıcının galeriden fotoğraf veya video seçebileceği bir ekran oluşturma",
+            "dependencies": [],
+            "details": "1. image_picker paketini ekle: `flutter pub add image_picker`\n2. lib/screens/create_post/image_picker_screen.dart dosyasını oluştur:\n```dart\nimport 'dart:io';\nimport 'package:flutter/material.dart';\nimport 'package:image_picker/image_picker.dart';\nimport 'image_filter_screen.dart';\n\nclass ImagePickerScreen extends StatefulWidget {\n  const ImagePickerScreen({Key? key}) : super(key: key);\n\n  @override\n  _ImagePickerScreenState createState() => _ImagePickerScreenState();\n}\n\nclass _ImagePickerScreenState extends State<ImagePickerScreen> {\n  final ImagePicker _picker = ImagePicker();\n\n  Future<void> _pickImage(ImageSource source) async {\n    try {\n      final XFile? pickedFile = await _picker.pickImage(source: source);\n      if (pickedFile != null) {\n        Navigator.push(\n          context,\n          MaterialPageRoute(\n            builder: (context) => ImageFilterScreen(imageFile: File(pickedFile.path)),\n          ),\n        );\n      }\n    } catch (e) {\n      ScaffoldMessenger.of(context).showSnackBar(\n        SnackBar(content: Text('Görsel seçilirken hata oluştu: $e')),\n      );\n    }\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(title: const Text('Yeni Gönderi')),\n      body: Center(\n        child: Column(\n          mainAxisAlignment: MainAxisAlignment.center,\n          children: [\n            ElevatedButton(\n              onPressed: () => _pickImage(ImageSource.gallery),\n              child: const Text('Galeriden Seç'),\n            ),\n            const SizedBox(height: 20),\n            ElevatedButton(\n              onPressed: () => _pickImage(ImageSource.camera),\n              child: const Text('Kamera ile Çek'),\n            ),\n          ],\n        ),\n      ),\n    );\n  }\n}\n```\n3. Gerekli izinleri ekle:\n- Android: android/app/src/main/AndroidManifest.xml dosyasına:\n```xml\n<uses-permission android:name=\"android.permission.CAMERA\" />\n<uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />\n```\n- iOS: ios/Runner/Info.plist dosyasına:\n```xml\n<key>NSCameraUsageDescription</key>\n<string>Fotoğraf çekmek için kamera izni gerekiyor</string>\n<key>NSPhotoLibraryUsageDescription</key>\n<string>Galeriden fotoğraf seçmek için izin gerekiyor</string>\n```",
+            "status": "pending",
+            "testStrategy": "1. Galeriden fotoğraf seçme işlevini test et\n2. Kameradan fotoğraf çekme işlevini test et\n3. İzinlerin doğru çalıştığını kontrol et\n4. Hata durumlarının doğru şekilde ele alındığını doğrula"
+          },
+          {
+            "id": 2,
+            "title": "Görsel Düzenleme ve Filtre Ekranı",
+            "description": "Seçilen görsele filtre ve düzenleme seçenekleri sunan ekranı oluşturma",
+            "dependencies": [],
+            "details": "1. image_cropper paketini ekle: `flutter pub add image_cropper`\n2. lib/screens/create_post/image_filter_screen.dart dosyasını oluştur:\n```dart\nimport 'dart:io';\nimport 'package:flutter/material.dart';\nimport 'package:image_cropper/image_cropper.dart';\nimport 'post_caption_screen.dart';\n\nclass ImageFilterScreen extends StatefulWidget {\n  final File imageFile;\n  \n  const ImageFilterScreen({Key? key, required this.imageFile}) : super(key: key);\n\n  @override\n  _ImageFilterScreenState createState() => _ImageFilterScreenState();\n}\n\nclass _ImageFilterScreenState extends State<ImageFilterScreen> {\n  late File _imageFile;\n  double _brightness = 0.0;\n  double _contrast = 1.0;\n  bool _isBlackAndWhite = false;\n\n  @override\n  void initState() {\n    super.initState();\n    _imageFile = widget.imageFile;\n  }\n\n  Future<void> _cropImage() async {\n    CroppedFile? croppedFile = await ImageCropper().cropImage(\n      sourcePath: _imageFile.path,\n      aspectRatioPresets: [\n        CropAspectRatioPreset.square,\n        CropAspectRatioPreset.ratio3x2,\n        CropAspectRatioPreset.original,\n        CropAspectRatioPreset.ratio4x3,\n        CropAspectRatioPreset.ratio16x9\n      ],\n      uiSettings: [\n        AndroidUiSettings(\n          toolbarTitle: 'Görseli Kırp',\n          toolbarColor: Theme.of(context).primaryColor,\n          toolbarWidgetColor: Colors.white,\n          initAspectRatio: CropAspectRatioPreset.original,\n          lockAspectRatio: false,\n        ),\n        IOSUiSettings(\n          title: 'Görseli Kırp',\n        ),\n      ],\n    );\n    \n    if (croppedFile != null) {\n      setState(() {\n        _imageFile = File(croppedFile.path);\n      });\n    }\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: const Text('Düzenle'),\n        actions: [\n          IconButton(\n            icon: const Icon(Icons.check),\n            onPressed: () {\n              Navigator.push(\n                context,\n                MaterialPageRoute(\n                  builder: (context) => PostCaptionScreen(imageFile: _imageFile),\n                ),\n              );\n            },\n          ),\n        ],\n      ),\n      body: Column(\n        children: [\n          Expanded(\n            child: ColorFiltered(\n              colorFilter: ColorFilter.matrix(\n                _isBlackAndWhite\n                    ? [\n                        0.2126, 0.7152, 0.0722, 0, 0,\n                        0.2126, 0.7152, 0.0722, 0, 0,\n                        0.2126, 0.7152, 0.0722, 0, 0,\n                        0, 0, 0, 1, 0,\n                      ]\n                    : [\n                        _contrast, 0, 0, 0, _brightness * 255,\n                        0, _contrast, 0, 0, _brightness * 255,\n                        0, 0, _contrast, 0, _brightness * 255,\n                        0, 0, 0, 1, 0,\n                      ],\n              ),\n              child: Image.file(_imageFile),\n            ),\n          ),\n          Padding(\n            padding: const EdgeInsets.all(16.0),\n            child: Column(\n              children: [\n                Row(\n                  children: [\n                    const Text('Parlaklık'),\n                    Expanded(\n                      child: Slider(\n                        value: _brightness,\n                        min: -1.0,\n                        max: 1.0,\n                        onChanged: (value) {\n                          setState(() {\n                            _brightness = value;\n                          });\n                        },\n                      ),\n                    ),\n                  ],\n                ),\n                Row(\n                  children: [\n                    const Text('Kontrast'),\n                    Expanded(\n                      child: Slider(\n                        value: _contrast,\n                        min: 0.5,\n                        max: 1.5,\n                        onChanged: (value) {\n                          setState(() {\n                            _contrast = value;\n                          });\n                        },\n                      ),\n                    ),\n                  ],\n                ),\n                Row(\n                  children: [\n                    const Text('Siyah-Beyaz'),\n                    Switch(\n                      value: _isBlackAndWhite,\n                      onChanged: (value) {\n                        setState(() {\n                          _isBlackAndWhite = value;\n                        });\n                      },\n                    ),\n                  ],\n                ),\n                ElevatedButton(\n                  onPressed: _cropImage,\n                  child: const Text('Görseli Kırp'),\n                ),\n              ],\n            ),\n          ),\n        ],\n      ),\n    );\n  }\n}\n```\n3. Android için gerekli ayarları ekle: android/app/build.gradle dosyasında defaultConfig içine:\n```gradle\ndefaultConfig {\n    // ...\n    minSdkVersion 21 // image_cropper için minimum 21 gerekli\n}\n```",
+            "status": "pending",
+            "testStrategy": "1. Görsel kırpma işlevinin doğru çalıştığını test et\n2. Parlaklık, kontrast ve siyah-beyaz filtrelerinin doğru uygulandığını kontrol et\n3. Farklı ekran boyutlarında görüntüleme sorunları olup olmadığını test et\n4. Düzenleme sonrası bir sonraki ekrana geçişin doğru çalıştığını doğrula"
+          },
+          {
+            "id": 3,
+            "title": "Açıklama ve Konum Ekleme Ekranı",
+            "description": "Kullanıcının gönderi için açıklama ve konum ekleyebileceği ekranı oluşturma",
+            "dependencies": [],
+            "details": "1. Google Places API için paketi ekle: `flutter pub add google_maps_flutter google_places_flutter`\n2. lib/screens/create_post/post_caption_screen.dart dosyasını oluştur:\n```dart\nimport 'dart:io';\nimport 'package:flutter/material.dart';\nimport 'package:google_places_flutter/google_places_flutter.dart';\nimport 'package:google_places_flutter/model/prediction.dart';\nimport '../../services/post_service.dart';\n\nclass PostCaptionScreen extends StatefulWidget {\n  final File imageFile;\n  \n  const PostCaptionScreen({Key? key, required this.imageFile}) : super(key: key);\n\n  @override\n  _PostCaptionScreenState createState() => _PostCaptionScreenState();\n}\n\nclass _PostCaptionScreenState extends State<PostCaptionScreen> {\n  final TextEditingController _captionController = TextEditingController();\n  final TextEditingController _locationController = TextEditingController();\n  final PostService _postService = PostService();\n  bool _isLoading = false;\n  String? _selectedLocation;\n\n  Future<void> _createPost() async {\n    if (_isLoading) return;\n    \n    setState(() {\n      _isLoading = true;\n    });\n    \n    try {\n      await _postService.createPost(\n        widget.imageFile,\n        _captionController.text,\n        _selectedLocation,\n      );\n      \n      if (mounted) {\n        // Başarılı olduğunda ana sayfaya dön\n        Navigator.popUntil(context, (route) => route.isFirst);\n        ScaffoldMessenger.of(context).showSnackBar(\n          const SnackBar(content: Text('Gönderi başarıyla paylaşıldı')),\n        );\n      }\n    } catch (e) {\n      if (mounted) {\n        ScaffoldMessenger.of(context).showSnackBar(\n          SnackBar(content: Text('Gönderi paylaşılırken hata oluştu: $e')),\n        );\n      }\n    } finally {\n      if (mounted) {\n        setState(() {\n          _isLoading = false;\n        });\n      }\n    }\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      appBar: AppBar(\n        title: const Text('Yeni Gönderi'),\n        actions: [\n          _isLoading\n              ? const Center(child: CircularProgressIndicator())\n              : TextButton(\n                  onPressed: _createPost,\n                  child: const Text('Paylaş', style: TextStyle(color: Colors.white)),\n                ),\n        ],\n      ),\n      body: SingleChildScrollView(\n        child: Column(\n          children: [\n            Padding(\n              padding: const EdgeInsets.all(16.0),\n              child: Row(\n                crossAxisAlignment: CrossAxisAlignment.start,\n                children: [\n                  SizedBox(\n                    width: 80,\n                    height: 80,\n                    child: Image.file(widget.imageFile, fit: BoxFit.cover),\n                  ),\n                  const SizedBox(width: 16),\n                  Expanded(\n                    child: TextField(\n                      controller: _captionController,\n                      decoration: const InputDecoration(\n                        hintText: 'Açıklama ekle...',\n                        border: InputBorder.none,\n                      ),\n                      maxLines: 5,\n                    ),\n                  ),\n                ],\n              ),\n            ),\n            const Divider(),\n            Padding(\n              padding: const EdgeInsets.symmetric(horizontal: 16.0),\n              child: GooglePlaceAutoCompleteTextField(\n                textEditingController: _locationController,\n                googleAPIKey: \"YOUR_GOOGLE_API_KEY\", // Google API anahtarınızı buraya ekleyin\n                inputDecoration: const InputDecoration(\n                  hintText: 'Konum ekle',\n                  prefixIcon: Icon(Icons.location_on),\n                ),\n                debounceTime: 800,\n                countries: const [\"tr\"],\n                isLatLngRequired: false,\n                getPlaceDetailWithLatLng: (Prediction prediction) {\n                  setState(() {\n                    _selectedLocation = prediction.description;\n                  });\n                },\n                itmClick: (Prediction prediction) {\n                  _locationController.text = prediction.description ?? '';\n                  _locationController.selection = TextSelection.fromPosition(\n                    TextPosition(offset: prediction.description?.length ?? 0),\n                  );\n                  setState(() {\n                    _selectedLocation = prediction.description;\n                  });\n                },\n              ),\n            ),\n          ],\n        ),\n      ),\n    );\n  }\n\n  @override\n  void dispose() {\n    _captionController.dispose();\n    _locationController.dispose();\n    super.dispose();\n  }\n}\n```\n3. Google Places API için anahtarınızı alın ve güvenli bir şekilde saklayın (örneğin .env dosyasında)\n4. Android için AndroidManifest.xml dosyasına izin ekleyin:\n```xml\n<uses-permission android:name=\"android.permission.INTERNET\" />\n```",
+            "status": "pending",
+            "testStrategy": "1. Açıklama ekleme işlevinin doğru çalıştığını test et\n2. Konum arama ve seçme işlevinin doğru çalıştığını kontrol et\n3. Gönderi paylaşma işleminin başarılı ve başarısız durumlarını test et\n4. Kullanıcı arayüzünün kullanılabilirliğini değerlendir"
+          },
+          {
+            "id": 4,
+            "title": "StorageService Oluşturma",
+            "description": "Görselleri Supabase Storage'a yüklemek için gerekli servisi oluşturma",
+            "dependencies": [],
+            "details": "1. path_provider paketini ekle: `flutter pub add path_provider path`\n2. lib/services/storage_service.dart dosyasını oluştur:\n```dart\nimport 'dart:io';\nimport 'package:path/path.dart' as path;\nimport '../config/supabase_config.dart';\n\nclass StorageService {\n  final _supabase = SupabaseConfig.client;\n\n  Future<String> uploadImage(File file, String folder) async {\n    final user = _supabase.auth.currentUser;\n    if (user == null) throw Exception('User not authenticated');\n    \n    final fileExt = path.extension(file.path);\n    final fileName = '${DateTime.now().millisecondsSinceEpoch}$fileExt';\n    final filePath = '$folder/${user.id}/$fileName';\n    \n    await _supabase.storage.from('media').upload(filePath, file);\n    \n    return _supabase.storage.from('media').getPublicUrl(filePath);\n  }\n  \n  Future<void> deleteImage(String imageUrl) async {\n    final user = _supabase.auth.currentUser;\n    if (user == null) throw Exception('User not authenticated');\n    \n    // URL'den dosya yolunu çıkar\n    final uri = Uri.parse(imageUrl);\n    final pathSegments = uri.pathSegments;\n    if (pathSegments.length < 2) throw Exception('Invalid image URL');\n    \n    // media/path/to/file.jpg formatındaki yolu al\n    final filePath = pathSegments.sublist(1).join('/');\n    \n    await _supabase.storage.from('media').remove([filePath]);\n  }\n  \n  Future<String> uploadVideo(File file, String folder) async {\n    // Video yükleme işlemi görsel yüklemeye benzer\n    return uploadImage(file, folder);\n  }\n}\n```\n3. Supabase projenizde 'media' adında bir storage bucket oluşturun ve gerekli izinleri ayarlayın:\n   - Supabase Dashboard > Storage > Buckets > Create new bucket\n   - Bucket adı: media\n   - Public bucket: Evet (görsellerin public URL'lerle erişilebilir olması için)\n   - RLS (Row Level Security) politikalarını ayarlayın:\n     - Okuma: Herkes okuyabilir\n     - Yazma: Sadece kimliği doğrulanmış kullanıcılar yazabilir\n4. Supabase Storage'da klasör yapısını oluşturmak için gerekli ayarları yapın (posts, avatars vb. klasörler)",
+            "status": "pending",
+            "testStrategy": "1. Görsel yükleme işlevinin doğru çalıştığını test et\n2. Farklı dosya formatlarıyla (jpg, png, gif) test et\n3. Büyük dosyaların yüklenmesini test et\n4. Hata durumlarının doğru şekilde ele alındığını doğrula\n5. Dosya silme işlevinin doğru çalıştığını kontrol et"
+          },
+          {
+            "id": 5,
+            "title": "PostService Gönderi Oluşturma İşlevi",
+            "description": "Kullanıcının oluşturduğu gönderiyi veritabanına kaydetmek için gerekli servisi oluşturma",
+            "dependencies": [],
+            "details": "1. lib/services/post_service.dart dosyasını oluştur veya mevcut dosyaya gönderi oluşturma metodunu ekle:\n```dart\nimport 'dart:io';\nimport '../config/supabase_config.dart';\nimport '../models/post_model.dart';\nimport 'storage_service.dart';\n\nclass PostService {\n  final _supabase = SupabaseConfig.client;\n  final _storageService = StorageService();\n\n  Future<List<PostModel>> getFeedPosts() async {\n    final user = _supabase.auth.currentUser;\n    if (user == null) return [];\n\n    // Kullanıcının takip ettiği kişilerin gönderilerini getir\n    final response = await _supabase\n      .from('posts')\n      .select('''\n        *,\n        users:user_id(id, username, avatar_url)\n      ''')\n      .or('user_id.eq.${user.id},is_public.eq.true')\n      .order('created_at', ascending: false);\n\n    return (response as List).map((post) => PostModel.fromJson(post)).toList();\n  }\n\n  Future<void> createPost(File imageFile, String? caption, String? location) async {\n    final user = _supabase.auth.currentUser;\n    if (user == null) throw Exception('User not authenticated');\n    \n    // Upload image\n    final imageUrl = await _storageService.uploadImage(imageFile, 'posts');\n    \n    // Create post\n    await _supabase.from('posts').insert({\n      'user_id': user.id,\n      'image_url': imageUrl,\n      'caption': caption,\n      'location': location,\n      'created_at': DateTime.now().toIso8601String(),\n      'is_public': true,\n      'likes_count': 0,\n      'comments_count': 0\n    });\n  }\n  \n  Future<void> likePost(String postId) async {\n    final user = _supabase.auth.currentUser;\n    if (user == null) throw Exception('User not authenticated');\n    \n    // Önce like tablosuna ekle\n    await _supabase.from('likes').upsert({\n      'user_id': user.id,\n      'post_id': postId,\n      'created_at': DateTime.now().toIso8601String(),\n    });\n    \n    // Sonra posts tablosundaki likes_count'u güncelle\n    await _supabase.rpc('increment_likes_count', {\n      'post_id_param': postId,\n    });\n  }\n  \n  Future<void> unlikePost(String postId) async {\n    final user = _supabase.auth.currentUser;\n    if (user == null) throw Exception('User not authenticated');\n    \n    // Önce like tablosundan sil\n    await _supabase\n      .from('likes')\n      .delete()\n      .eq('user_id', user.id)\n      .eq('post_id', postId);\n    \n    // Sonra posts tablosundaki likes_count'u güncelle\n    await _supabase.rpc('decrement_likes_count', {\n      'post_id_param': postId,\n    });\n  }\n  \n  Future<bool> isPostLiked(String postId) async {\n    final user = _supabase.auth.currentUser;\n    if (user == null) return false;\n    \n    final response = await _supabase\n      .from('likes')\n      .select()\n      .eq('user_id', user.id)\n      .eq('post_id', postId);\n    \n    return (response as List).isNotEmpty;\n  }\n}\n```\n2. lib/models/post_model.dart dosyasını oluştur:\n```dart\nclass PostModel {\n  final String id;\n  final String userId;\n  final String imageUrl;\n  final String? caption;\n  final String? location;\n  final DateTime createdAt;\n  final bool isPublic;\n  final int likesCount;\n  final int commentsCount;\n  final Map<String, dynamic>? user;\n\n  PostModel({\n    required this.id,\n    required this.userId,\n    required this.imageUrl,\n    this.caption,\n    this.location,\n    required this.createdAt,\n    required this.isPublic,\n    required this.likesCount,\n    required this.commentsCount,\n    this.user,\n  });\n\n  factory PostModel.fromJson(Map<String, dynamic> json) {\n    return PostModel(\n      id: json['id'],\n      userId: json['user_id'],\n      imageUrl: json['image_url'],\n      caption: json['caption'],\n      location: json['location'],\n      createdAt: DateTime.parse(json['created_at']),\n      isPublic: json['is_public'] ?? true,\n      likesCount: json['likes_count'] ?? 0,\n      commentsCount: json['comments_count'] ?? 0,\n      user: json['users'],\n    );\n  }\n}\n```\n3. Supabase veritabanında gerekli tabloları oluşturun:\n   - posts tablosu:\n     - id: uuid, primary key\n     - user_id: uuid, foreign key (users tablosuna referans)\n     - image_url: text\n     - caption: text, nullable\n     - location: text, nullable\n     - created_at: timestamp with time zone\n     - is_public: boolean, default true\n     - likes_count: integer, default 0\n     - comments_count: integer, default 0\n   - likes tablosu:\n     - id: uuid, primary key\n     - user_id: uuid, foreign key (users tablosuna referans)\n     - post_id: uuid, foreign key (posts tablosuna referans)\n     - created_at: timestamp with time zone\n4. Supabase'de likes_count ve comments_count için stored procedure oluşturun:\n```sql\ncreate or replace function increment_likes_count(post_id_param uuid)\nreturns void as $$\nbegin\n  update posts\n  set likes_count = likes_count + 1\n  where id = post_id_param;\nend;\n$$ language plpgsql;\n\ncreate or replace function decrement_likes_count(post_id_param uuid)\nreturns void as $$\nbegin\n  update posts\n  set likes_count = greatest(0, likes_count - 1)\n  where id = post_id_param;\nend;\n$$ language plpgsql;\n```",
+            "status": "pending",
+            "testStrategy": "1. Gönderi oluşturma işlevinin doğru çalıştığını test et\n2. Veritabanına doğru verilerin kaydedildiğini kontrol et\n3. Beğeni ekleme ve kaldırma işlevlerinin doğru çalıştığını test et\n4. Hata durumlarının doğru şekilde ele alındığını doğrula\n5. Gönderi listeleme işlevinin doğru çalıştığını kontrol et"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Beğeni ve Yorum Sistemi",
+        "description": "Gönderilere beğeni ve yorum yapma işlevselliğini oluşturma",
+        "details": "1. lib/services/post_service.dart'a beğeni metodları ekle:\n```dart\nFuture<void> likePost(String postId) async {\n  final user = _supabase.auth.currentUser;\n  if (user == null) throw Exception('User not authenticated');\n  \n  await _supabase.from('likes').insert({\n    'post_id': postId,\n    'user_id': user.id,\n  });\n}\n\nFuture<void> unlikePost(String postId) async {\n  final user = _supabase.auth.currentUser;\n  if (user == null) throw Exception('User not authenticated');\n  \n  await _supabase\n    .from('likes')\n    .delete()\n    .match({\n      'post_id': postId,\n      'user_id': user.id,\n    });\n}\n```\n\n2. lib/services/comment_service.dart dosyası oluştur:\n```dart\nimport '../config/supabase_config.dart';\nimport '../models/comment_model.dart';\n\nclass CommentService {\n  final _supabase = SupabaseConfig.client;\n\n  Future<List<CommentModel>> getComments(String postId) async {\n    final response = await _supabase\n      .from('comments')\n      .select('''\n        *,\n        users:user_id(*)\n      ''')\n      .eq('post_id', postId)\n      .order('created_at', ascending: true);\n\n    return (response as List).map((comment) => CommentModel.fromJson(comment)).toList();\n  }\n\n  Future<void> addComment(String postId, String content) async {\n    final user = _supabase.auth.currentUser;\n    if (user == null) throw Exception('User not authenticated');\n    \n    await _supabase.from('comments').insert({\n      'post_id': postId,\n      'user_id': user.id,\n      'content': content,\n    });\n  }\n\n  Future<void> deleteComment(String commentId) async {\n    final user = _supabase.auth.currentUser;\n    if (user == null) throw Exception('User not authenticated');\n    \n    await _supabase\n      .from('comments')\n      .delete()\n      .match({\n        'id': commentId,\n        'user_id': user.id,\n      });\n  }\n}\n```\n\n3. lib/models/comment_model.dart dosyası oluştur:\n```dart\nimport 'user_model.dart';\n\nclass CommentModel {\n  final String id;\n  final String postId;\n  final String userId;\n  final UserModel user;\n  final String content;\n  final DateTime createdAt;\n\n  CommentModel({\n    required this.id,\n    required this.postId,\n    required this.userId,\n    required this.user,\n    required this.content,\n    required this.createdAt,\n  });\n\n  factory CommentModel.fromJson(Map<String, dynamic> json) {\n    return CommentModel(\n      id: json['id'],\n      postId: json['post_id'],\n      userId: json['user_id'],\n      user: UserModel.fromJson(json['users']),\n      content: json['content'],\n      createdAt: DateTime.parse(json['created_at']),\n    );\n  }\n}\n```\n\n4. lib/screens/post/comments_screen.dart dosyası oluştur\n5. lib/widgets/comment_item.dart widget'ını oluştur\n6. post_card.dart'a beğeni ve yorum butonları ekle",
+        "testStrategy": "1. Beğeni ekleme ve kaldırma işlevlerini test et\n2. Yorum ekleme ve silme işlevlerini test et\n3. Yorumların doğru sırayla listelendiğini kontrol et\n4. Beğeni ve yorum sayılarının doğru güncellendiğini doğrula\n5. Kullanıcı kendi yorumunu silme işlevini test et",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Like Functionality in Post Service",
+            "description": "Add like and unlike methods to the post service and update the post model to include like count and user like status",
+            "dependencies": [],
+            "details": "1. Update the post_service.dart file with the likePost and unlikePost methods as provided in the task description.\n2. Add a method to check if the current user has liked a post: `Future<bool> hasUserLikedPost(String postId)`.\n3. Add a method to get the like count for a post: `Future<int> getPostLikeCount(String postId)`.\n4. Update the PostModel class to include likeCount and isLikedByUser fields.\n5. Modify the fromJson factory in PostModel to handle these new fields.",
+            "status": "pending",
+            "testStrategy": "Test like and unlike functionality by verifying database entries are created and deleted correctly. Test the hasUserLikedPost method returns correct values before and after liking a post."
+          },
+          {
+            "id": 2,
+            "title": "Create Comment Model and Service",
+            "description": "Implement the comment model and service for managing post comments",
+            "dependencies": [],
+            "details": "1. Create the comment_model.dart file with the CommentModel class as provided in the task description.\n2. Create the comment_service.dart file with the CommentService class including getComments, addComment, and deleteComment methods as provided.\n3. Add a method to get comment count for a post: `Future<int> getCommentCount(String postId)`.\n4. Ensure proper error handling for all service methods.\n5. Update the PostModel to include commentCount field if needed.",
+            "status": "pending",
+            "testStrategy": "Test comment retrieval with different post IDs. Test adding comments and verify they appear in the database. Test deleting comments and verify they are removed from the database."
+          },
+          {
+            "id": 3,
+            "title": "Create Comment Item Widget",
+            "description": "Develop a reusable widget to display individual comments",
+            "dependencies": [],
+            "details": "1. Create lib/widgets/comment_item.dart file.\n2. Implement a CommentItem stateless widget that takes a CommentModel as input.\n3. Design the UI to show user avatar, username, comment content, and timestamp.\n4. Add a delete button that only appears for the comment owner.\n5. Implement the delete functionality using the CommentService.\n6. Style the widget appropriately to match the app's design.",
+            "status": "pending",
+            "testStrategy": "Test the widget renders correctly with different comment data. Verify the delete button only appears for the comment owner. Test the delete functionality works when the button is pressed."
+          },
+          {
+            "id": 4,
+            "title": "Implement Comments Screen",
+            "description": "Create a dedicated screen to view and add comments for a post",
+            "dependencies": [],
+            "details": "1. Create lib/screens/post/comments_screen.dart file.\n2. Implement a CommentsScreen stateful widget that takes a postId parameter.\n3. Use CommentService to fetch and display comments for the post.\n4. Add a text input field at the bottom for adding new comments.\n5. Implement real-time updates using Supabase subscriptions to show new comments without requiring a refresh.\n6. Add loading states and error handling.\n7. Implement pull-to-refresh functionality.",
+            "status": "pending",
+            "testStrategy": "Test comment loading, adding new comments, and real-time updates. Verify the UI updates correctly when comments are added or deleted. Test error states and loading indicators."
+          },
+          {
+            "id": 5,
+            "title": "Update Post Card with Like and Comment UI",
+            "description": "Enhance the post card widget to include like and comment functionality",
+            "dependencies": [],
+            "details": "1. Update lib/widgets/post_card.dart to add like button, like count, comment button, and comment count.\n2. Implement like/unlike toggle functionality using PostService.\n3. Show the current like state (filled or outlined heart icon) based on whether the user has liked the post.\n4. Add a tap handler on the comment button to navigate to the CommentsScreen.\n5. Update the UI to show like and comment counts.\n6. Add animations for the like button when pressed.\n7. Ensure the UI updates reactively when like status changes.",
+            "status": "pending",
+            "testStrategy": "Test like button toggles correctly between liked and unliked states. Verify like count updates correctly. Test navigation to comments screen works when comment button is pressed. Test UI updates when like status changes."
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Takip Sistemi",
+        "description": "Kullanıcıların birbirlerini takip edebilmesi için gerekli işlevselliği oluşturma",
+        "details": "1. lib/services/user_service.dart dosyası oluştur:\n```dart\nimport '../config/supabase_config.dart';\nimport '../models/user_model.dart';\n\nclass UserService {\n  final _supabase = SupabaseConfig.client;\n\n  Future<UserModel?> getUserProfile(String userId) async {\n    final response = await _supabase\n      .from('users')\n      .select()\n      .eq('id', userId)\n      .single();\n\n    if (response == null) return null;\n    return UserModel.fromJson(response);\n  }\n\n  Future<List<UserModel>> searchUsers(String query) async {\n    final response = await _supabase\n      .from('users')\n      .select()\n      .ilike('username', '%$query%')\n      .limit(20);\n\n    return (response as List).map((user) => UserModel.fromJson(user)).toList();\n  }\n\n  Future<void> followUser(String userId) async {\n    final currentUser = _supabase.auth.currentUser;\n    if (currentUser == null) throw Exception('User not authenticated');\n    \n    await _supabase.from('follows').insert({\n      'follower_id': currentUser.id,\n      'following_id': userId,\n    });\n  }\n\n  Future<void> unfollowUser(String userId) async {\n    final currentUser = _supabase.auth.currentUser;\n    if (currentUser == null) throw Exception('User not authenticated');\n    \n    await _supabase\n      .from('follows')\n      .delete()\n      .match({\n        'follower_id': currentUser.id,\n        'following_id': userId,\n      });\n  }\n\n  Future<bool> isFollowing(String userId) async {\n    final currentUser = _supabase.auth.currentUser;\n    if (currentUser == null) return false;\n    \n    final response = await _supabase\n      .from('follows')\n      .select()\n      .match({\n        'follower_id': currentUser.id,\n        'following_id': userId,\n      });\n\n    return (response as List).isNotEmpty;\n  }\n\n  Future<Map<String, int>> getFollowCounts(String userId) async {\n    final followersCount = await _supabase\n      .from('follows')\n      .select('id', count: CountOption.exact)\n      .eq('following_id', userId);\n\n    final followingCount = await _supabase\n      .from('follows')\n      .select('id', count: CountOption.exact)\n      .eq('follower_id', userId);\n\n    return {\n      'followers': followersCount.count ?? 0,\n      'following': followingCount.count ?? 0,\n    };\n  }\n}\n```\n\n2. lib/screens/profile/user_profile_screen.dart dosyası oluştur\n3. lib/screens/profile/followers_screen.dart ve following_screen.dart dosyalarını oluştur\n4. lib/widgets/user_list_item.dart widget'ını oluştur\n5. Profil ekranına takipçi ve takip edilen sayılarını ekle",
+        "testStrategy": "1. Kullanıcı takip etme ve takibi bırakma işlevlerini test et\n2. Takipçi ve takip edilen sayılarının doğru güncellendiğini doğrula\n3. Takipçi ve takip edilen listelerinin doğru gösterildiğini kontrol et\n4. Takip durumuna göre butonların doğru görüntülendiğini test et",
+        "priority": "medium",
+        "dependencies": [
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement UserProfileScreen",
+            "description": "Create the user profile screen that displays user information, posts, and follow statistics with follow/unfollow functionality",
+            "dependencies": [],
+            "details": "Create lib/screens/profile/user_profile_screen.dart with:\n1. User avatar, username, and bio display\n2. Follow/unfollow button that changes based on current follow status\n3. Follower and following count display that are clickable to navigate to respective screens\n4. Grid view of user posts\n5. Use UserService methods to fetch profile data, follow counts and handle follow/unfollow actions\n6. Implement StatefulWidget with loading states",
+            "status": "pending",
+            "testStrategy": "Test follow/unfollow button state changes, verify follower counts update correctly, test navigation to follower/following screens"
+          },
+          {
+            "id": 2,
+            "title": "Create FollowersScreen",
+            "description": "Implement the screen that displays a list of users who follow the current profile",
+            "dependencies": [
+              1
+            ],
+            "details": "Create lib/screens/profile/followers_screen.dart with:\n1. AppBar with title 'Followers'\n2. ListView.builder to display followers\n3. Use UserService to fetch followers list\n4. Implement pull-to-refresh functionality\n5. Show loading indicator during data fetch\n6. Handle empty state with appropriate message\n7. Use UserListItem widget to display each follower",
+            "status": "pending",
+            "testStrategy": "Test loading states, verify correct followers are displayed, test pull-to-refresh functionality"
+          },
+          {
+            "id": 3,
+            "title": "Create FollowingScreen",
+            "description": "Implement the screen that displays a list of users the current profile is following",
+            "dependencies": [
+              1
+            ],
+            "details": "Create lib/screens/profile/following_screen.dart with:\n1. AppBar with title 'Following'\n2. ListView.builder to display following users\n3. Use UserService to fetch following list\n4. Implement pull-to-refresh functionality\n5. Show loading indicator during data fetch\n6. Handle empty state with appropriate message\n7. Use UserListItem widget to display each following user",
+            "status": "pending",
+            "testStrategy": "Test loading states, verify correct following users are displayed, test pull-to-refresh functionality"
+          },
+          {
+            "id": 4,
+            "title": "Implement UserListItem Widget",
+            "description": "Create a reusable widget for displaying user information in lists with follow/unfollow functionality",
+            "dependencies": [
+              1
+            ],
+            "details": "Create lib/widgets/user_list_item.dart with:\n1. Row layout with user avatar, username and bio\n2. Follow/unfollow button that changes based on current follow status\n3. Onpress handler for the entire list item to navigate to user profile\n4. Use UserService.isFollowing() to determine button state\n5. Implement follow/unfollow functionality using UserService methods\n6. Add loading state for follow/unfollow button",
+            "status": "pending",
+            "testStrategy": "Test follow/unfollow button functionality, verify UI updates correctly after follow state changes, test navigation to user profile"
+          },
+          {
+            "id": 5,
+            "title": "Integrate Follow System with Main Profile",
+            "description": "Update the main profile screen to display follower and following counts and integrate with the follow system",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "1. Update the profile screen to display follower and following counts from UserService.getFollowCounts()\n2. Make counts clickable to navigate to respective screens\n3. Add follow/unfollow button for other users' profiles\n4. Update UI in real-time after follow/unfollow actions\n5. Add refresh functionality to update counts\n6. Ensure proper error handling for network issues\n7. Add loading states during follow/unfollow operations",
+            "status": "pending",
+            "testStrategy": "Test that follower/following counts update correctly after follow/unfollow actions, verify navigation to follower/following screens works, test error handling for network issues"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Keşfet ve Arama Özellikleri",
+        "description": "Kullanıcıların içerik ve diğer kullanıcıları keşfedebilmesi için arama ve keşfet sayfası oluşturma",
+        "details": "1. lib/services/post_service.dart'a keşfet metodu ekle:\n```dart\nFuture<List<PostModel>> getExplorePosts() async {\n  final user = _supabase.auth.currentUser;\n  if (user == null) return [];\n\n  // Popüler gönderileri getir (beğeni sayısına göre)\n  final response = await _supabase\n    .from('posts')\n    .select('''\n      *,\n      users:user_id(*),\n      likes:likes(count),\n      comments:comments(count)\n    ''')\n    .not('user_id', 'eq', user.id) // Kullanıcının kendi gönderilerini hariç tut\n    .order('created_at', ascending: false)\n    .limit(50);\n\n  List<PostModel> posts = (response as List).map((post) => PostModel.fromJson(post)).toList();\n  \n  // Beğeni sayısına göre sırala\n  posts.sort((a, b) => b.likesCount.compareTo(a.likesCount));\n  \n  return posts;\n}\n```\n\n2. lib/services/search_service.dart dosyası oluştur:\n```dart\nimport '../config/supabase_config.dart';\nimport '../models/user_model.dart';\n\nclass SearchService {\n  final _supabase = SupabaseConfig.client;\n\n  Future<List<UserModel>> searchUsers(String query) async {\n    if (query.isEmpty) return [];\n    \n    final response = await _supabase\n      .from('users')\n      .select()\n      .or('username.ilike.%$query%, full_name.ilike.%$query%')\n      .limit(20);\n\n    return (response as List).map((user) => UserModel.fromJson(user)).toList();\n  }\n\n  Future<List<Map<String, dynamic>>> searchHashtags(String query) async {\n    if (query.isEmpty || !query.startsWith('#')) return [];\n    \n    // Hashtag araması için özel bir tablo oluşturulabilir\n    // Şimdilik post caption'larında arama yapalım\n    final tagQuery = query.replaceAll('#', '');\n    \n    final response = await _supabase\n      .from('posts')\n      .select('caption')\n      .ilike('caption', '%#$tagQuery%')\n      .limit(20);\n\n    // Hashtag'leri çıkar ve grupla\n    Set<String> hashtags = {};\n    for (var post in response) {\n      final caption = post['caption'] as String?;\n      if (caption == null) continue;\n      \n      final regex = RegExp(r'#(\\w+)');\n      final matches = regex.allMatches(caption);\n      \n      for (var match in matches) {\n        final tag = match.group(1);\n        if (tag != null && tag.toLowerCase().contains(tagQuery.toLowerCase())) {\n          hashtags.add(tag);\n        }\n      }\n    }\n    \n    return hashtags.map((tag) => {'tag': tag}).toList();\n  }\n}\n```\n\n3. lib/screens/explore/explore_screen.dart dosyası oluştur\n4. lib/screens/search/search_screen.dart dosyası oluştur\n5. lib/widgets/search_bar.dart widget'ını oluştur\n6. Keşfet sayfası için grid görünümü oluştur",
+        "testStrategy": "1. Keşfet sayfasının popüler gönderileri doğru şekilde gösterdiğini test et\n2. Arama işlevinin kullanıcıları doğru şekilde bulduğunu kontrol et\n3. Hashtag aramasının doğru çalıştığını test et\n4. Arama sonuçlarının doğru formatta gösterildiğini doğrula\n5. Grid görünümünün farklı ekran boyutlarında responsive olduğunu test et",
+        "priority": "medium",
+        "dependencies": [
+          4,
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement ExploreScreen UI with Grid Layout",
+            "description": "Create the explore screen UI with a grid layout to display popular posts from other users",
+            "dependencies": [],
+            "details": "1. Create lib/screens/explore/explore_screen.dart\n2. Implement a StatefulWidget with a GridView.builder for post display\n3. Use a staggered grid layout for Pinterest-like appearance\n4. Add a loading state and error handling\n5. Implement pull-to-refresh functionality\n6. Connect to the getExplorePosts() method from PostService\n7. Display post thumbnails with engagement metrics (likes count)",
+            "status": "pending",
+            "testStrategy": "Test grid layout on different screen sizes, verify posts load correctly, test pull-to-refresh functionality, ensure proper error states are displayed"
+          },
+          {
+            "id": 2,
+            "title": "Create Custom SearchBar Widget",
+            "description": "Develop a reusable search bar widget with animation and filtering capabilities",
+            "dependencies": [],
+            "details": "1. Create lib/widgets/search_bar.dart\n2. Implement a custom TextField with search icon and clear button\n3. Add animation for expanding/collapsing search bar\n4. Include debounce functionality to prevent excessive API calls\n5. Support different search modes (users, hashtags)\n6. Add callback functions for search results\n7. Style according to app theme",
+            "status": "pending",
+            "testStrategy": "Test search bar appearance in different states, verify debounce functionality works correctly, test animations, ensure callbacks are triggered properly"
+          },
+          {
+            "id": 3,
+            "title": "Implement SearchScreen UI",
+            "description": "Create the search screen that displays search results for users and hashtags",
+            "dependencies": [
+              2
+            ],
+            "details": "1. Create lib/screens/search/search_screen.dart\n2. Integrate the custom SearchBar widget\n3. Implement TabBar for switching between Users and Hashtags results\n4. Create user list item widget showing profile picture, username, and follow button\n5. Create hashtag list item showing tag name and post count\n6. Add navigation to user profiles and hashtag result pages\n7. Implement empty state and loading indicators",
+            "status": "pending",
+            "testStrategy": "Test search functionality with various queries, verify correct display of user and hashtag results, test tab switching, ensure navigation to profiles works correctly"
+          },
+          {
+            "id": 4,
+            "title": "Implement Post Detail View from Explore",
+            "description": "Create functionality to view full post details when a post is tapped in the explore grid",
+            "dependencies": [
+              1
+            ],
+            "details": "1. Create lib/screens/explore/post_detail_screen.dart\n2. Implement Hero animation for smooth transition from grid to detail\n3. Display full post with user info, image, caption, and comments\n4. Add like, comment, and share functionality\n5. Implement swipe navigation between posts\n6. Add option to follow user from post detail\n7. Include back navigation to explore grid",
+            "status": "pending",
+            "testStrategy": "Test hero animation transitions, verify all post details display correctly, test interaction features (like, comment), ensure swipe navigation works properly"
+          },
+          {
+            "id": 5,
+            "title": "Integrate Search and Explore in Navigation",
+            "description": "Add search and explore features to the app's main navigation and connect all components",
+            "dependencies": [
+              1,
+              3,
+              4
+            ],
+            "details": "1. Update bottom navigation bar to include Explore tab\n2. Add search icon in app bar or as floating action button\n3. Connect navigation between screens (Home, Explore, Search)\n4. Implement state management to preserve search results and explore grid position\n5. Add deep linking support for sharing search results\n6. Ensure proper back navigation handling\n7. Optimize performance for smooth transitions between screens",
+            "status": "pending",
+            "testStrategy": "Test navigation flow between all screens, verify state preservation when navigating away and back, test deep linking functionality, ensure performance remains smooth with many posts loaded"
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Bildirim Sistemi",
+        "description": "Beğeni, yorum ve takip bildirimlerini yönetmek için bildirim sistemi oluşturma",
+        "details": "1. lib/services/notification_service.dart dosyası oluştur:\n```dart\nimport '../config/supabase_config.dart';\nimport '../models/notification_model.dart';\n\nclass NotificationService {\n  final _supabase = SupabaseConfig.client;\n\n  Future<List<NotificationModel>> getNotifications() async {\n    final user = _supabase.auth.currentUser;\n    if (user == null) return [];\n\n    final response = await _supabase\n      .from('notifications')\n      .select('''\n        *,\n        actor:actor_id(*)\n      ''')\n      .eq('user_id', user.id)\n      .order('created_at', ascending: false);\n\n    return (response as List).map((notification) => NotificationModel.fromJson(notification)).toList();\n  }\n\n  Future<void> markAsRead(String notificationId) async {\n    await _supabase\n      .from('notifications')\n      .update({'is_read': true})\n      .eq('id', notificationId);\n  }\n\n  Future<void> markAllAsRead() async {\n    final user = _supabase.auth.currentUser;\n    if (user == null) return;\n\n    await _supabase\n      .from('notifications')\n      .update({'is_read': true})\n      .eq('user_id', user.id)\n      .eq('is_read', false);\n  }\n\n  Stream<List<NotificationModel>> notificationsStream() {\n    final user = _supabase.auth.currentUser;\n    if (user == null) return Stream.value([]);\n\n    return _supabase\n      .from('notifications')\n      .stream(primaryKey: ['id'])\n      .eq('user_id', user.id)\n      .order('created_at')\n      .map((data) => data.map((item) => NotificationModel.fromJson(item)).toList());\n  }\n\n  // Trigger fonksiyonları Supabase'de oluşturulacak\n}\n```\n\n2. lib/models/notification_model.dart dosyası oluştur:\n```dart\nimport 'user_model.dart';\n\nclass NotificationModel {\n  final String id;\n  final String userId;\n  final String actorId;\n  final UserModel actor;\n  final String type; // 'like', 'comment', 'follow'\n  final String? postId;\n  final String? commentId;\n  final bool isRead;\n  final DateTime createdAt;\n\n  NotificationModel({\n    required this.id,\n    required this.userId,\n    required this.actorId,\n    required this.actor,\n    required this.type,\n    this.postId,\n    this.commentId,\n    required this.isRead,\n    required this.createdAt,\n  });\n\n  factory NotificationModel.fromJson(Map<String, dynamic> json) {\n    return NotificationModel(\n      id: json['id'],\n      userId: json['user_id'],\n      actorId: json['actor_id'],\n      actor: UserModel.fromJson(json['actor']),\n      type: json['type'],\n      postId: json['post_id'],\n      commentId: json['comment_id'],\n      isRead: json['is_read'] ?? false,\n      createdAt: DateTime.parse(json['created_at']),\n    );\n  }\n}\n```\n\n3. lib/screens/notifications/notifications_screen.dart dosyası oluştur\n4. lib/widgets/notification_item.dart widget'ını oluştur\n5. Supabase'de bildirim tetikleyicileri için database trigger'ları oluştur:\n   - Beğeni eklendiğinde bildirim oluştur\n   - Yorum eklendiğinde bildirim oluştur\n   - Takip edildiğinde bildirim oluştur\n6. Push notification için Firebase Cloud Messaging entegrasyonu ekle",
+        "testStrategy": "1. Bildirimlerin doğru şekilde oluşturulduğunu test et\n2. Bildirim listesinin doğru şekilde gösterildiğini kontrol et\n3. Okundu olarak işaretleme işlevinin çalıştığını doğrula\n4. Gerçek zamanlı bildirimlerin doğru şekilde alındığını test et\n5. Push notification'ların doğru şekilde gönderildiğini ve alındığını test et",
+        "priority": "medium",
+        "dependencies": [
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement NotificationsScreen UI",
+            "description": "Create the notifications screen UI that displays a list of notifications with appropriate styling and interaction elements.",
+            "dependencies": [],
+            "details": "Create lib/screens/notifications/notifications_screen.dart with:\n- StatefulWidget that uses StreamBuilder to listen to notification updates\n- AppBar with 'Notifications' title and 'Mark all as read' action\n- ListView.builder to display notification items\n- Empty state when no notifications exist\n- Loading state while fetching notifications\n- Pull-to-refresh functionality\n- Connect to NotificationService.notificationsStream() for real-time updates",
+            "status": "pending",
+            "testStrategy": "Test UI rendering with different notification states (empty, loading, populated). Verify pull-to-refresh functionality and proper display of notification items."
+          },
+          {
+            "id": 2,
+            "title": "Create NotificationItem Widget",
+            "description": "Develop a reusable widget to display individual notification items with appropriate styling based on notification type.",
+            "dependencies": [
+              1
+            ],
+            "details": "Create lib/widgets/notification_item.dart with:\n- StatelessWidget that takes a NotificationModel as input\n- Different UI layouts based on notification type (like, comment, follow)\n- User avatar display from actor information\n- Formatted timestamp display\n- Visual indicator for unread notifications\n- Tap handling to mark as read and navigate to relevant content\n- Implement different icon and text based on notification type",
+            "status": "pending",
+            "testStrategy": "Test widget rendering with different notification types. Verify correct display of user information, timestamps, and read/unread states."
+          },
+          {
+            "id": 3,
+            "title": "Create Supabase Database Triggers",
+            "description": "Set up PostgreSQL triggers in Supabase to automatically create notifications when relevant events occur.",
+            "dependencies": [],
+            "details": "Create the following database triggers in Supabase SQL editor:\n\n1. Like notification trigger:\n```sql\nCREATE OR REPLACE FUNCTION create_like_notification()\nRETURNS TRIGGER AS $$\nBEGIN\n  INSERT INTO notifications (user_id, actor_id, type, post_id, is_read, created_at)\n  SELECT posts.user_id, NEW.user_id, 'like', NEW.post_id, false, NOW()\n  FROM posts WHERE id = NEW.post_id AND posts.user_id != NEW.user_id;\n  RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql;\n\nCREATE TRIGGER on_like_added\nAFTER INSERT ON likes\nFOR EACH ROW\nEXECUTE FUNCTION create_like_notification();\n```\n\n2. Comment notification trigger:\n```sql\nCREATE OR REPLACE FUNCTION create_comment_notification()\nRETURNS TRIGGER AS $$\nBEGIN\n  INSERT INTO notifications (user_id, actor_id, type, post_id, comment_id, is_read, created_at)\n  SELECT posts.user_id, NEW.user_id, 'comment', NEW.post_id, NEW.id, false, NOW()\n  FROM posts WHERE id = NEW.post_id AND posts.user_id != NEW.user_id;\n  RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql;\n\nCREATE TRIGGER on_comment_added\nAFTER INSERT ON comments\nFOR EACH ROW\nEXECUTE FUNCTION create_comment_notification();\n```\n\n3. Follow notification trigger:\n```sql\nCREATE OR REPLACE FUNCTION create_follow_notification()\nRETURNS TRIGGER AS $$\nBEGIN\n  INSERT INTO notifications (user_id, actor_id, type, is_read, created_at)\n  VALUES (NEW.followed_id, NEW.follower_id, 'follow', false, NOW());\n  RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql;\n\nCREATE TRIGGER on_follow_added\nAFTER INSERT ON follows\nFOR EACH ROW\nEXECUTE FUNCTION create_follow_notification();\n```",
+            "status": "pending",
+            "testStrategy": "Test each trigger by performing the corresponding action (like, comment, follow) and verifying that notifications are correctly created in the database with proper user_id, actor_id, and other fields."
+          },
+          {
+            "id": 4,
+            "title": "Implement Firebase Cloud Messaging Integration",
+            "description": "Integrate Firebase Cloud Messaging (FCM) to enable push notifications for the application.",
+            "dependencies": [
+              3
+            ],
+            "details": "1. Add Firebase dependencies to pubspec.yaml:\n```yaml\ndependencies:\n  firebase_core: ^latest_version\n  firebase_messaging: ^latest_version\n  flutter_local_notifications: ^latest_version\n```\n\n2. Create lib/services/push_notification_service.dart:\n```dart\nimport 'package:firebase_messaging/firebase_messaging.dart';\nimport 'package:flutter_local_notifications/flutter_local_notifications.dart';\nimport '../config/supabase_config.dart';\n\nclass PushNotificationService {\n  final FirebaseMessaging _fcm = FirebaseMessaging.instance;\n  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();\n  final _supabase = SupabaseConfig.client;\n\n  Future<void> initialize() async {\n    // Request permission\n    NotificationSettings settings = await _fcm.requestPermission();\n    \n    // Configure local notifications\n    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');\n    final DarwinInitializationSettings initializationSettingsIOS = DarwinInitializationSettings();\n    final InitializationSettings initializationSettings = InitializationSettings(\n      android: initializationSettingsAndroid,\n      iOS: initializationSettingsIOS,\n    );\n    await _flutterLocalNotificationsPlugin.initialize(initializationSettings);\n    \n    // Get FCM token\n    String? token = await _fcm.getToken();\n    if (token != null) {\n      await saveTokenToDatabase(token);\n    }\n    \n    // Listen for token refresh\n    FirebaseMessaging.instance.onTokenRefresh.listen(saveTokenToDatabase);\n    \n    // Handle background messages\n    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);\n    \n    // Handle foreground messages\n    FirebaseMessaging.onMessage.listen(_handleForegroundMessage);\n    \n    // Handle notification tap\n    FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);\n  }\n  \n  Future<void> saveTokenToDatabase(String token) async {\n    final user = _supabase.auth.currentUser;\n    if (user == null) return;\n    \n    await _supabase.from('fcm_tokens').upsert({\n      'user_id': user.id,\n      'token': token,\n      'updated_at': DateTime.now().toIso8601String(),\n    });\n  }\n  \n  void _handleForegroundMessage(RemoteMessage message) {\n    RemoteNotification? notification = message.notification;\n    AndroidNotification? android = message.notification?.android;\n    \n    if (notification != null && android != null) {\n      _flutterLocalNotificationsPlugin.show(\n        notification.hashCode,\n        notification.title,\n        notification.body,\n        NotificationDetails(\n          android: AndroidNotificationDetails(\n            'high_importance_channel',\n            'High Importance Notifications',\n            importance: Importance.high,\n            priority: Priority.high,\n          ),\n        ),\n        payload: message.data['route'],\n      );\n    }\n  }\n  \n  void _handleNotificationTap(RemoteMessage message) {\n    // Handle navigation based on notification type\n    // Implementation depends on app's navigation structure\n  }\n}\n\nFuture<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {\n  // Handle background messages\n  // This needs to be a top-level function\n}\n```\n\n3. Create Supabase function to send push notifications when a notification is created:\n```sql\nCREATE OR REPLACE FUNCTION send_push_notification()\nRETURNS TRIGGER AS $$\nDECLARE\n  token_record RECORD;\n  actor_name TEXT;\n  notification_text TEXT;\nBEGIN\n  -- Get actor name\n  SELECT username INTO actor_name FROM users WHERE id = NEW.actor_id;\n  \n  -- Create notification text based on type\n  IF NEW.type = 'like' THEN\n    notification_text := actor_name || ' liked your post';\n  ELSIF NEW.type = 'comment' THEN\n    notification_text := actor_name || ' commented on your post';\n  ELSIF NEW.type = 'follow' THEN\n    notification_text := actor_name || ' started following you';\n  END IF;\n  \n  -- For each FCM token of the user\n  FOR token_record IN SELECT token FROM fcm_tokens WHERE user_id = NEW.user_id LOOP\n    -- Call Firebase Cloud Function to send the notification\n    PERFORM http.post(\n      'https://your-firebase-cloud-function-url',\n      jsonb_build_object(\n        'token', token_record.token,\n        'title', 'New Notification',\n        'body', notification_text,\n        'data', jsonb_build_object(\n          'notification_id', NEW.id,\n          'type', NEW.type,\n          'post_id', NEW.post_id,\n          'comment_id', NEW.comment_id\n        )\n      ),\n      '{\"Content-Type\": \"application/json\"}'\n    );\n  END LOOP;\n  \n  RETURN NEW;\nEND;\n$$ LANGUAGE plpgsql;\n\nCREATE TRIGGER on_notification_created\nAFTER INSERT ON notifications\nFOR EACH ROW\nEXECUTE FUNCTION send_push_notification();\n```\n\n4. Initialize the service in main.dart:\n```dart\nvoid main() async {\n  WidgetsFlutterBinding.ensureInitialized();\n  await Firebase.initializeApp();\n  await dotenv.load();\n  await Supabase.initialize(...);\n  \n  final pushNotificationService = PushNotificationService();\n  await pushNotificationService.initialize();\n  \n  runApp(MyApp());\n}\n```\n\n5. Create a Firebase Cloud Function to send notifications (deploy to Firebase).",
+            "status": "pending",
+            "testStrategy": "Test FCM token registration and storage. Verify push notifications are received when new app notifications are created. Test handling of notifications in foreground, background, and when app is terminated."
+          },
+          {
+            "id": 5,
+            "title": "Implement Notification Management in App",
+            "description": "Integrate notification functionality throughout the app, including notification badge, count display, and handling notification interactions.",
+            "dependencies": [
+              1,
+              2,
+              4
+            ],
+            "details": "1. Create a NotificationProvider to manage notification state:\n```dart\nimport 'package:flutter/material.dart';\nimport '../models/notification_model.dart';\nimport '../services/notification_service.dart';\n\nclass NotificationProvider extends ChangeNotifier {\n  final NotificationService _notificationService = NotificationService();\n  List<NotificationModel> _notifications = [];\n  int _unreadCount = 0;\n  bool _isLoading = false;\n  \n  List<NotificationModel> get notifications => _notifications;\n  int get unreadCount => _unreadCount;\n  bool get isLoading => _isLoading;\n  \n  Future<void> loadNotifications() async {\n    _isLoading = true;\n    notifyListeners();\n    \n    try {\n      _notifications = await _notificationService.getNotifications();\n      _calculateUnreadCount();\n    } catch (e) {\n      print('Error loading notifications: $e');\n    } finally {\n      _isLoading = false;\n      notifyListeners();\n    }\n  }\n  \n  void _calculateUnreadCount() {\n    _unreadCount = _notifications.where((notification) => !notification.isRead).length;\n    notifyListeners();\n  }\n  \n  Future<void> markAsRead(String notificationId) async {\n    try {\n      await _notificationService.markAsRead(notificationId);\n      _notifications = _notifications.map((notification) {\n        if (notification.id == notificationId) {\n          return NotificationModel(\n            id: notification.id,\n            userId: notification.userId,\n            actorId: notification.actorId,\n            actor: notification.actor,\n            type: notification.type,\n            postId: notification.postId,\n            commentId: notification.commentId,\n            isRead: true,\n            createdAt: notification.createdAt,\n          );\n        }\n        return notification;\n      }).toList();\n      _calculateUnreadCount();\n    } catch (e) {\n      print('Error marking notification as read: $e');\n    }\n  }\n  \n  Future<void> markAllAsRead() async {\n    try {\n      await _notificationService.markAllAsRead();\n      _notifications = _notifications.map((notification) {\n        return NotificationModel(\n          id: notification.id,\n          userId: notification.userId,\n          actorId: notification.actorId,\n          actor: notification.actor,\n          type: notification.type,\n          postId: notification.postId,\n          commentId: notification.commentId,\n          isRead: true,\n          createdAt: notification.createdAt,\n        );\n      }).toList();\n      _unreadCount = 0;\n      notifyListeners();\n    } catch (e) {\n      print('Error marking all notifications as read: $e');\n    }\n  }\n  \n  void setupNotificationListener() {\n    _notificationService.notificationsStream().listen((updatedNotifications) {\n      _notifications = updatedNotifications;\n      _calculateUnreadCount();\n    });\n  }\n  \n  void handleNotificationTap(NotificationModel notification) async {\n    if (!notification.isRead) {\n      await markAsRead(notification.id);\n    }\n    \n    // Navigation logic based on notification type\n  }\n}\n```\n\n2. Add notification badge to bottom navigation bar:\n```dart\nBottomNavigationBar(\n  items: [\n    BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),\n    BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),\n    BottomNavigationBarItem(\n      icon: Stack(\n        children: [\n          Icon(Icons.notifications),\n          if (notificationProvider.unreadCount > 0)\n            Positioned(\n              right: 0,\n              top: 0,\n              child: Container(\n                padding: EdgeInsets.all(1),\n                decoration: BoxDecoration(\n                  color: Colors.red,\n                  borderRadius: BorderRadius.circular(6),\n                ),\n                constraints: BoxConstraints(minWidth: 12, minHeight: 12),\n                child: Text(\n                  notificationProvider.unreadCount > 9 ? '9+' : notificationProvider.unreadCount.toString(),\n                  style: TextStyle(color: Colors.white, fontSize: 8),\n                  textAlign: TextAlign.center,\n                ),\n              ),\n            ),\n        ],\n      ),\n      label: 'Notifications',\n    ),\n    BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),\n  ],\n  currentIndex: _selectedIndex,\n  onTap: _onItemTapped,\n)\n```\n\n3. Update main.dart to provide NotificationProvider:\n```dart\nMultiProvider(\n  providers: [\n    ChangeNotifierProvider(create: (_) => AuthProvider()),\n    ChangeNotifierProvider(create: (_) => PostProvider()),\n    ChangeNotifierProvider(create: (_) => NotificationProvider()),\n  ],\n  child: MaterialApp(...),\n)\n```\n\n4. Initialize notification listener in app startup:\n```dart\nclass _MyAppState extends State<MyApp> {\n  @override\n  void initState() {\n    super.initState();\n    WidgetsBinding.instance.addPostFrameCallback((_) {\n      Provider.of<NotificationProvider>(context, listen: false).setupNotificationListener();\n    });\n  }\n  \n  // Rest of the class\n}\n```\n\n5. Handle deep links from push notifications in main.dart:\n```dart\nFuture<void> setupInteractedMessage() async {\n  RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();\n  if (initialMessage != null) {\n    _handleNotificationNavigation(initialMessage);\n  }\n}\n\nvoid _handleNotificationNavigation(RemoteMessage message) {\n  if (message.data['type'] == 'like' || message.data['type'] == 'comment') {\n    // Navigate to post detail\n    if (message.data['post_id'] != null) {\n      navigatorKey.currentState?.pushNamed('/post', arguments: message.data['post_id']);\n    }\n  } else if (message.data['type'] == 'follow') {\n    // Navigate to profile\n    if (message.data['actor_id'] != null) {\n      navigatorKey.currentState?.pushNamed('/profile', arguments: message.data['actor_id']);\n    }\n  }\n}\n```",
+            "status": "pending",
+            "testStrategy": "Test notification badge display and count updates. Verify navigation when tapping on different notification types. Test mark as read functionality. Verify deep linking from push notifications works correctly."
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Tema ve Görünüm Ayarları",
+        "description": "Uygulama için dark/light mode ve görünüm ayarlarını oluşturma",
+        "details": "1. lib/theme/app_theme.dart dosyası oluştur:\n```dart\nimport 'package:flutter/material.dart';\n\nclass AppTheme {\n  static ThemeData lightTheme = ThemeData(\n    brightness: Brightness.light,\n    primaryColor: Colors.white,\n    scaffoldBackgroundColor: Colors.white,\n    appBarTheme: AppBarTheme(\n      backgroundColor: Colors.white,\n      elevation: 0,\n      iconTheme: IconThemeData(color: Colors.black),\n      titleTextStyle: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),\n    ),\n    bottomNavigationBarTheme: BottomNavigationBarThemeData(\n      backgroundColor: Colors.white,\n      selectedItemColor: Colors.black,\n      unselectedItemColor: Colors.grey,\n    ),\n    textTheme: TextTheme(\n      bodyText1: TextStyle(color: Colors.black),\n      bodyText2: TextStyle(color: Colors.black),\n    ),\n    iconTheme: IconThemeData(color: Colors.black),\n  );\n\n  static ThemeData darkTheme = ThemeData(\n    brightness: Brightness.dark,\n    primaryColor: Colors.black,\n    scaffoldBackgroundColor: Colors.black,\n    appBarTheme: AppBarTheme(\n      backgroundColor: Colors.black,\n      elevation: 0,\n      iconTheme: IconThemeData(color: Colors.white),\n      titleTextStyle: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),\n    ),\n    bottomNavigationBarTheme: BottomNavigationBarThemeData(\n      backgroundColor: Colors.black,\n      selectedItemColor: Colors.white,\n      unselectedItemColor: Colors.grey,\n    ),\n    textTheme: TextTheme(\n      bodyText1: TextStyle(color: Colors.white),\n      bodyText2: TextStyle(color: Colors.white),\n    ),\n    iconTheme: IconThemeData(color: Colors.white),\n  );\n}\n```\n\n2. lib/services/settings_service.dart dosyası oluştur:\n```dart\nimport 'package:shared_preferences/shared_preferences.dart';\n\nclass SettingsService {\n  static const String _themeKey = 'theme_mode';\n\n  Future<bool> isDarkMode() async {\n    final prefs = await SharedPreferences.getInstance();\n    return prefs.getBool(_themeKey) ?? false;\n  }\n\n  Future<void> setDarkMode(bool value) async {\n    final prefs = await SharedPreferences.getInstance();\n    await prefs.setBool(_themeKey, value);\n  }\n\n  Future<void> toggleTheme() async {\n    final isDark = await isDarkMode();\n    await setDarkMode(!isDark);\n  }\n}\n```\n\n3. lib/providers/theme_provider.dart dosyası oluştur:\n```dart\nimport 'package:flutter/material.dart';\nimport '../services/settings_service.dart';\n\nclass ThemeProvider extends ChangeNotifier {\n  final SettingsService _settingsService = SettingsService();\n  bool _isDarkMode = false;\n\n  bool get isDarkMode => _isDarkMode;\n\n  ThemeProvider() {\n    _loadTheme();\n  }\n\n  Future<void> _loadTheme() async {\n    _isDarkMode = await _settingsService.isDarkMode();\n    notifyListeners();\n  }\n\n  Future<void> toggleTheme() async {\n    await _settingsService.toggleTheme();\n    _isDarkMode = !_isDarkMode;\n    notifyListeners();\n  }\n}\n```\n\n4. lib/screens/settings/settings_screen.dart dosyası oluştur\n5. main.dart'a tema provider'ı ekle\n6. Tüm ekranlarda tema değişikliklerini uygula",
+        "testStrategy": "1. Tema değiştirme işlevinin doğru çalıştığını test et\n2. Tema ayarının cihaz yeniden başlatıldığında korunduğunu doğrula\n3. Tüm ekranların ve widget'ların her iki temada da doğru görüntülendiğini kontrol et\n4. Tema değişikliğinin anında uygulandığını test et",
+        "priority": "low",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement AppTheme Class with Light and Dark Themes",
+            "description": "Create the AppTheme class with predefined light and dark theme configurations for the application",
+            "dependencies": [],
+            "details": "Create lib/theme/app_theme.dart file with the AppTheme class containing static ThemeData objects for both light and dark modes. Include styling for primaryColor, scaffoldBackgroundColor, appBarTheme, bottomNavigationBarTheme, textTheme, and iconTheme for both themes.",
+            "status": "pending",
+            "testStrategy": "Verify that all theme properties are correctly defined for both light and dark themes. Check that color contrasts meet accessibility standards."
+          },
+          {
+            "id": 2,
+            "title": "Create SettingsService for Theme Persistence",
+            "description": "Implement a service to save and retrieve theme preferences using SharedPreferences",
+            "dependencies": [],
+            "details": "Create lib/services/settings_service.dart with methods to check current theme mode (isDarkMode), set theme mode (setDarkMode), and toggle between themes (toggleTheme). Use SharedPreferences to persist theme selection across app restarts.",
+            "status": "pending",
+            "testStrategy": "Test that theme preferences are correctly saved and retrieved from SharedPreferences. Verify that the theme setting persists after app restart."
+          },
+          {
+            "id": 3,
+            "title": "Develop ThemeProvider for State Management",
+            "description": "Create a provider to manage theme state and notify widgets when theme changes",
+            "dependencies": [
+              2
+            ],
+            "details": "Create lib/providers/theme_provider.dart that extends ChangeNotifier. Implement methods to load theme settings on initialization and toggle theme. Use the SettingsService to handle persistence and notify listeners when theme changes.",
+            "status": "pending",
+            "testStrategy": "Test that the provider correctly loads initial theme state from SettingsService. Verify that toggleTheme method changes the theme and notifies listeners."
+          },
+          {
+            "id": 4,
+            "title": "Create Settings Screen with Theme Toggle",
+            "description": "Implement a settings screen with UI controls to change theme mode",
+            "dependencies": [
+              3
+            ],
+            "details": "Create lib/screens/settings/settings_screen.dart with a UI that includes a switch or toggle button for changing between light and dark themes. Connect the UI to ThemeProvider to update theme when user interacts with controls. Include other appearance settings if needed.",
+            "status": "pending",
+            "testStrategy": "Test that the theme toggle UI correctly reflects current theme state. Verify that toggling the switch immediately updates the app theme. Test UI appearance in both light and dark modes."
+          },
+          {
+            "id": 5,
+            "title": "Integrate Theme System with Main App",
+            "description": "Connect the theme system to the main app and ensure all screens respond to theme changes",
+            "dependencies": [
+              1,
+              3,
+              4
+            ],
+            "details": "Update main.dart to wrap the app with ChangeNotifierProvider<ThemeProvider>. Modify MaterialApp to use theme from ThemeProvider (lightTheme or darkTheme based on isDarkMode). Add a preload step to initialize theme settings before showing the UI. Review all existing screens to ensure they use theme-aware colors and styles instead of hardcoded values.",
+            "status": "pending",
+            "testStrategy": "Test that theme changes apply immediately across all screens. Verify that the app loads with the correct saved theme on startup. Test all screens in both light and dark modes to ensure proper styling."
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Performans Optimizasyonu",
+        "description": "Uygulama performansını optimize etme ve PRD'de belirtilen performans gereksinimlerini karşılama",
+        "details": "1. Görüntü önbelleğe alma için CachedNetworkImage kullan:\n```dart\nimport 'package:cached_network_image/cached_network_image.dart';\n\n// Kullanım örneği\nCachedNetworkImage(\n  imageUrl: imageUrl,\n  placeholder: (context, url) => Center(child: CircularProgressIndicator()),\n  errorWidget: (context, url, error) => Icon(Icons.error),\n)\n```\n\n2. Lazy loading ve pagination uygula:\n```dart\n// Örnek pagination kodu\nFuture<List<PostModel>> getPaginatedPosts(int page, int limit) async {\n  final offset = page * limit;\n  final response = await _supabase\n    .from('posts')\n    .select(...)\n    .range(offset, offset + limit - 1)\n    .order('created_at', ascending: false);\n  \n  return (response as List).map((post) => PostModel.fromJson(post)).toList();\n}\n```\n\n3. Görüntü boyutlarını optimize et:\n```dart\n// Supabase Storage'dan optimize edilmiş görüntü URL'si al\nString getOptimizedImageUrl(String url, {int width = 600}) {\n  return '$url?width=$width&resize=contain';\n}\n```\n\n4. Gereksiz build'leri önlemek için const constructor'lar kullan\n5. ListView.builder ve GridView.builder kullan\n6. Büyük listelerde AutomaticKeepAliveClientMixin kullan\n7. Flutter DevTools ile performans analizi yap\n8. Supabase sorguları için indeksler oluştur\n9. Ağ isteklerini minimize et ve önbelleğe al",
+        "testStrategy": "1. Uygulama başlatma süresini ölç ve 3 saniyeden az olduğunu doğrula\n2. Fotoğraf yükleme süresini ölç ve 5 saniyeden az olduğunu doğrula\n3. Flutter DevTools ile frame drops ölç ve 60 FPS hedefini karşıladığını kontrol et\n4. Farklı ağ koşullarında performansı test et\n5. Farklı cihazlarda (düşük ve yüksek performanslı) test et",
+        "priority": "medium",
+        "dependencies": [
+          4,
+          5,
+          6,
+          8,
+          9
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Image Caching and Optimization",
+            "description": "Implement image caching using CachedNetworkImage and optimize image sizes to reduce memory usage and improve loading times.",
+            "dependencies": [],
+            "details": "1. Add cached_network_image package to pubspec.yaml\n2. Create a reusable ImageWidget component in lib/widgets/cached_image.dart that uses CachedNetworkImage\n3. Implement image size optimization function in lib/utils/image_utils.dart\n4. Add placeholder and error handling for all image loading\n5. Implement image preloading for critical UI elements",
+            "status": "pending",
+            "testStrategy": "Test image loading times before and after optimization. Verify cached images load instantly on second view. Test on slow network connections to ensure placeholders display correctly."
+          },
+          {
+            "id": 2,
+            "title": "Implement Pagination and Lazy Loading",
+            "description": "Implement efficient data loading with pagination and lazy loading for all list views in the application.",
+            "dependencies": [
+              1
+            ],
+            "details": "1. Update PostService to support pagination with limit and offset parameters\n2. Implement InfiniteScrollController in lib/controllers/infinite_scroll_controller.dart\n3. Modify ListView implementations to use ListView.builder with pagination\n4. Add loading indicators at the bottom of lists when fetching more data\n5. Implement scroll position restoration when navigating back to lists",
+            "status": "pending",
+            "testStrategy": "Test scrolling performance with large datasets. Verify memory usage remains stable during extended scrolling. Ensure new data loads correctly when reaching the end of the list."
+          },
+          {
+            "id": 3,
+            "title": "Optimize Widget Rebuilds",
+            "description": "Reduce unnecessary widget rebuilds to improve UI performance and responsiveness.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "1. Audit and refactor widgets to use const constructors where appropriate\n2. Implement proper state management to prevent full tree rebuilds\n3. Use AutomaticKeepAliveClientMixin for tabs and list items that should be preserved\n4. Replace StatefulWidgets with StatelessWidgets where possible\n5. Implement shouldRebuild method in custom widgets to prevent unnecessary rebuilds",
+            "status": "pending",
+            "testStrategy": "Use Flutter DevTools to measure and compare the number of rebuilds before and after optimization. Verify UI responsiveness during complex operations."
+          },
+          {
+            "id": 4,
+            "title": "Optimize Database Queries and Network Requests",
+            "description": "Improve backend performance by optimizing Supabase queries and implementing request caching.",
+            "dependencies": [
+              2
+            ],
+            "details": "1. Create database indexes for frequently queried fields in Supabase\n2. Implement request caching in lib/services/api_cache_service.dart\n3. Optimize query selects to only fetch required fields\n4. Batch related requests where possible\n5. Implement debouncing for search queries and other frequent user inputs",
+            "status": "pending",
+            "testStrategy": "Measure query execution times before and after optimization. Test application performance under poor network conditions. Verify cached responses are used correctly when offline."
+          },
+          {
+            "id": 5,
+            "title": "Conduct Performance Analysis and Optimization",
+            "description": "Use Flutter DevTools to identify and fix performance bottlenecks across the application.",
+            "dependencies": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "details": "1. Set up performance monitoring with Flutter DevTools\n2. Analyze app startup time and implement initialization optimizations\n3. Profile memory usage and fix any memory leaks\n4. Measure and optimize frame rendering times to maintain 60 FPS\n5. Create a performance test suite in lib/tests/performance_tests.dart to verify optimizations meet PRD requirements",
+            "status": "pending",
+            "testStrategy": "Run performance tests on multiple device types. Verify the application meets all PRD performance requirements: app startup under 3 seconds, photo loading under 5 seconds, and consistent 60 FPS during scrolling and animations."
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Güvenlik ve Hata Yönetimi",
+        "description": "Uygulama güvenliğini sağlama ve hata yönetimi mekanizmaları oluşturma",
+        "details": "1. lib/utils/error_handler.dart dosyası oluştur:\n```dart\nimport 'package:flutter/material.dart';\n\nclass ErrorHandler {\n  static void showError(BuildContext context, String message) {\n    ScaffoldMessenger.of(context).showSnackBar(\n      SnackBar(\n        content: Text(message),\n        backgroundColor: Colors.red,\n      ),\n    );\n  }\n\n  static String handleException(dynamic error) {\n    if (error is PostgrestException) {\n      return error.message ?? 'Veritabanı hatası';\n    } else if (error is AuthException) {\n      return error.message;\n    } else if (error is StorageException) {\n      return 'Depolama hatası: ${error.message}';\n    } else {\n      return 'Bir hata oluştu: ${error.toString()}';\n    }\n  }\n}\n```\n\n2. lib/utils/input_validators.dart dosyası oluştur:\n```dart\nclass InputValidators {\n  static String? validateEmail(String? value) {\n    if (value == null || value.isEmpty) {\n      return 'E-posta adresi gerekli';\n    }\n    final emailRegex = RegExp(r'^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$');\n    if (!emailRegex.hasMatch(value)) {\n      return 'Geçerli bir e-posta adresi girin';\n    }\n    return null;\n  }\n\n  static String? validatePassword(String? value) {\n    if (value == null || value.isEmpty) {\n      return 'Şifre gerekli';\n    }\n    if (value.length < 6) {\n      return 'Şifre en az 6 karakter olmalıdır';\n    }\n    return null;\n  }\n\n  static String? validateUsername(String? value) {\n    if (value == null || value.isEmpty) {\n      return 'Kullanıcı adı gerekli';\n    }\n    if (value.length < 3) {\n      return 'Kullanıcı adı en az 3 karakter olmalıdır';\n    }\n    final usernameRegex = RegExp(r'^[a-zA-Z0-9._]+$');\n    if (!usernameRegex.hasMatch(value)) {\n      return 'Kullanıcı adı sadece harf, rakam, nokta ve alt çizgi içerebilir';\n    }\n    return null;\n  }\n}\n```\n\n3. Supabase RLS (Row Level Security) politikalarını güçlendir:\n```sql\n-- Örnek RLS politikası (posts tablosu için)\nCREATE POLICY \"Users can view all posts\" ON posts\n  FOR SELECT USING (true);\n\nCREATE POLICY \"Users can insert their own posts\" ON posts\n  FOR INSERT WITH CHECK (auth.uid() = user_id);\n\nCREATE POLICY \"Users can update their own posts\" ON posts\n  FOR UPDATE USING (auth.uid() = user_id);\n\nCREATE POLICY \"Users can delete their own posts\" ON posts\n  FOR DELETE USING (auth.uid() = user_id);\n```\n\n4. Rate limiting için Supabase Edge Functions kullan\n5. Tüm API isteklerini try-catch blokları ile sar\n6. Hassas verileri şifrele ve güvenli şekilde sakla\n7. Kullanıcı girdilerini her zaman doğrula\n8. Sentry veya Firebase Crashlytics entegrasyonu ekle",
+        "testStrategy": "1. Hata mesajlarının doğru şekilde gösterildiğini test et\n2. Input validasyon kurallarının doğru çalıştığını kontrol et\n3. RLS politikalarının yetkisiz erişimleri engellediğini doğrula\n4. Hata durumlarında uygulamanın çökmediğini test et\n5. Güvenlik açıklarını test et (SQL injection, XSS vb.)\n6. Rate limiting'in doğru çalıştığını kontrol et",
+        "priority": "high",
+        "dependencies": [
+          1,
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Error Handling Utilities",
+            "description": "Create error handling utilities to manage and display application errors consistently",
+            "dependencies": [],
+            "details": "1. Complete the implementation of lib/utils/error_handler.dart by adding missing imports for PostgrestException, AuthException, and StorageException from supabase_flutter package\n2. Add a method to log errors to console or a logging service\n3. Create a custom ErrorWidget to display when widgets fail to build\n4. Implement a global error boundary using ErrorWidget.builder\n5. Add methods for handling network connectivity errors",
+            "status": "pending",
+            "testStrategy": "Write unit tests for handleException method with different error types. Test the showError method using widget tests to verify SnackBar appears with correct styling and message."
+          },
+          {
+            "id": 2,
+            "title": "Enhance Input Validation System",
+            "description": "Expand the input validation system to cover all user inputs in the application",
+            "dependencies": [
+              1
+            ],
+            "details": "1. Complete the implementation of lib/utils/input_validators.dart\n2. Add additional validation methods for phone numbers, URLs, and other common input types\n3. Create a FormValidator class that can be reused across forms\n4. Implement real-time validation feedback for text fields\n5. Add sanitization methods to clean user inputs before processing",
+            "status": "pending",
+            "testStrategy": "Create unit tests for each validation method with valid and invalid inputs. Test edge cases like empty strings, special characters, and boundary values."
+          },
+          {
+            "id": 3,
+            "title": "Implement Supabase RLS Policies",
+            "description": "Set up Row Level Security policies in Supabase to control data access",
+            "dependencies": [
+              1
+            ],
+            "details": "1. Implement the provided RLS policies for the posts table\n2. Create similar RLS policies for all other tables (users, comments, likes, follows)\n3. Test policies to ensure they correctly restrict unauthorized access\n4. Document all RLS policies in a central location\n5. Create a migration script that can be run to apply all security policies",
+            "status": "pending",
+            "testStrategy": "Test each policy by attempting to access, modify, and delete data as different users. Verify that users can only perform actions they're authorized for."
+          },
+          {
+            "id": 4,
+            "title": "Implement API Request Security",
+            "description": "Secure all API requests with proper error handling and rate limiting",
+            "dependencies": [
+              1,
+              3
+            ],
+            "details": "1. Create a BaseApiService class that wraps all Supabase calls with try-catch blocks\n2. Implement rate limiting using Supabase Edge Functions\n3. Create a secure storage utility for sensitive data using flutter_secure_storage\n4. Add request timeouts and retry logic for network operations\n5. Implement proper token refresh and session management",
+            "status": "pending",
+            "testStrategy": "Test API calls with simulated network errors. Verify rate limiting by making rapid successive requests. Test token refresh flow when authentication expires."
+          },
+          {
+            "id": 5,
+            "title": "Integrate Crash Reporting and Monitoring",
+            "description": "Set up crash reporting and error monitoring to track application issues",
+            "dependencies": [
+              1,
+              4
+            ],
+            "details": "1. Integrate Sentry or Firebase Crashlytics for error reporting\n2. Configure the service to capture uncaught exceptions\n3. Add custom context to error reports (user info, app state)\n4. Implement breadcrumbs to track user actions before crashes\n5. Create a dashboard for monitoring error rates and patterns",
+            "status": "pending",
+            "testStrategy": "Force test crashes to verify proper reporting. Check that sensitive information is not included in crash reports. Verify that custom context is correctly attached to error reports."
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-16T12:46:05.814Z",
+      "updated": "2025-07-16T13:42:27.674Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
