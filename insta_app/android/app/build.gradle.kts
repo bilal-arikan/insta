@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.insta_app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // ndkVersion = flutter.ndkVersion // Commented out to avoid NDK license issues
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
