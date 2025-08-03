@@ -2,66 +2,66 @@
 
 ## 🏗️ Proje Kurulumu ve Altyapı (1-15)
 
-### Backend Kurulumu
-- [ ] 1. Supabase projesi oluştur ve konfigüre et
-- [ ] 2. PostgreSQL veritabanı şemasını oluştur
-- [ ] 3. Row Level Security (RLS) politikalarını tanımla
-- [ ] 4. Supabase Storage bucket'larını yapılandır
-- [ ] 5. Edge Functions için geliştirme ortamını hazırla
+### Backend API Kurulumu
+- [ ] 1. Node.js/Express.js backend API projesi oluştur
+- [ ] 2. PostgreSQL veritabanı kurulumu ve bağlantısı
+- [ ] 3. JWT authentication middleware implementasyonu
+- [ ] 4. File upload servisi (Multer/Cloudinary) kurulumu
+- [ ] 5. API rate limiting ve CORS konfigürasyonu
 
 ### Flutter Projesi Kurulumu
 - [ ] 6. Flutter SDK'yı güncel versiyona güncelle
-- [ ] 7. Pubspec.yaml bağımlılıklarını optimize et
+- [ ] 7. Pubspec.yaml bağımlılıklarını optimize et (dio, riverpod, go_router)
 - [ ] 8. Riverpod state management kurulumu
 - [ ] 9. GoRouter navigation kurulumu
-- [ ] 10. Dio HTTP client konfigürasyonu
-- [ ] 11. Flutter Secure Storage kurulumu
+- [ ] 10. Dio HTTP client konfigürasyonu ve interceptor'lar
+- [ ] 11. Flutter Secure Storage kurulumu (token saklama)
 - [ ] 12. Cached Network Image konfigürasyonu
 - [ ] 13. Image Picker ve kamera izinleri
 - [ ] 14. Video Player kurulumu
-- [ ] 15. Push notification servisi kurulumu
+- [ ] 15. HTTP API service layer oluşturma
 
-## 🗄️ Veritabanı Tasarımı (16-30)
+## 🗄️ Backend API ve Veritabanı (16-30)
 
-### Tablo Yapıları
-- [ ] 16. Users tablosu oluştur (id, username, email, profile_image, bio, created_at)
-- [ ] 17. Posts tablosu oluştur (id, user_id, caption, media_url, media_type, created_at)
-- [ ] 18. Comments tablosu oluştur (id, post_id, user_id, content, created_at)
-- [ ] 19. Likes tablosu oluştur (id, post_id, user_id, created_at)
-- [ ] 20. Follows tablosu oluştur (id, follower_id, following_id, created_at)
-- [ ] 21. Stories tablosu oluştur (id, user_id, media_url, expires_at, created_at)
-- [ ] 22. Direct_messages tablosu oluştur (id, sender_id, receiver_id, content, created_at)
-- [ ] 23. Notifications tablosu oluştur (id, user_id, type, content, read, created_at)
-- [ ] 24. Hashtags tablosu oluştur (id, name, post_count)
-- [ ] 25. Post_hashtags junction tablosu oluştur
+### API Endpoint'leri
+- [ ] 16. Users API endpoints (/api/users - GET, POST, PUT, DELETE)
+- [ ] 17. Posts API endpoints (/api/posts - GET, POST, PUT, DELETE)
+- [ ] 18. Comments API endpoints (/api/comments - GET, POST, DELETE)
+- [ ] 19. Likes API endpoints (/api/likes - POST, DELETE)
+- [ ] 20. Follows API endpoints (/api/follows - GET, POST, DELETE)
+- [ ] 21. Stories API endpoints (/api/stories - GET, POST, DELETE)
+- [ ] 22. Messages API endpoints (/api/messages - GET, POST, DELETE)
+- [ ] 23. Notifications API endpoints (/api/notifications - GET, PUT)
+- [ ] 24. Search API endpoints (/api/search - users, posts, hashtags)
+- [ ] 25. Media upload API endpoint (/api/upload)
 
-### Veritabanı Optimizasyonu
-- [ ] 26. Users tablosu için indeksler oluştur
-- [ ] 27. Posts tablosu için performans indeksleri
-- [ ] 28. Comments ve Likes için composite indeksler
-- [ ] 29. Full-text search için GIN indeksleri
-- [ ] 30. Veritabanı trigger'ları oluştur (notification, post_count)
+### API Güvenlik ve Optimizasyon
+- [ ] 26. JWT token validation middleware
+- [ ] 27. API request/response validation (Joi/Yup)
+- [ ] 28. Database connection pooling (pg-pool)
+- [ ] 29. API response caching stratejisi
+- [ ] 30. Error handling ve logging sistemi
 
-## 🔐 Kimlik Doğrulama ve Güvenlik (31-45)
+## 🔐 HTTP Authentication ve Güvenlik (31-45)
 
-### Authentication
-- [ ] 31. Email/Password authentication implementasyonu
-- [ ] 32. Google OAuth entegrasyonu
-- [ ] 33. JWT token yönetimi
-- [ ] 34. Refresh token mekanizması
-- [ ] 35. Password reset fonksiyonalitesi
-- [ ] 36. Email verification sistemi
-- [ ] 37. Two-factor authentication (2FA)
-- [ ] 38. Biometric authentication (fingerprint/face)
+### Flutter HTTP Authentication
+- [ ] 31. Login API call implementasyonu (POST /api/auth/login)
+- [ ] 32. Register API call implementasyonu (POST /api/auth/register)
+- [ ] 33. JWT token storage ve management (Secure Storage)
+- [ ] 34. Automatic token refresh HTTP interceptor
+- [ ] 35. Password reset API calls (POST /api/auth/forgot-password)
+- [ ] 36. Email verification API calls (POST /api/auth/verify-email)
+- [ ] 37. Logout API call ve token temizleme
+- [ ] 38. Biometric authentication (local auth + API token)
 
-### Güvenlik
-- [ ] 39. API rate limiting implementasyonu
-- [ ] 40. Input validation ve sanitization
-- [ ] 41. SQL injection koruması
-- [ ] 42. XSS koruması
-- [ ] 43. CSRF token implementasyonu
-- [ ] 44. Media dosyaları için güvenlik kontrolleri
-- [ ] 45. User session yönetimi
+### HTTP Güvenlik
+- [ ] 39. API request headers ve authentication
+- [ ] 40. HTTP request validation ve error handling
+- [ ] 41. Secure HTTP client konfigürasyonu (SSL pinning)
+- [ ] 42. XSS koruması için input sanitization
+- [ ] 43. CSRF token HTTP header implementasyonu
+- [ ] 44. Media upload güvenlik kontrolleri
+- [ ] 45. HTTP session timeout yönetimi
 
 ## 🎨 UI/UX Tasarımı (46-65)
 
@@ -89,54 +89,54 @@
 - [ ] 64. Custom bottom navigation bar
 - [ ] 65. Floating action button animasyonları
 
-## 📱 Core Features (66-85)
+## 📱 HTTP API Entegrasyonu (66-85)
 
-### Post Yönetimi
-- [ ] 66. Fotoğraf çekme ve galeri seçimi
-- [ ] 67. Video çekme ve seçimi
-- [ ] 68. Media crop ve resize fonksiyonları
-- [ ] 69. Filter ve efekt uygulama
-- [ ] 70. Caption yazma ve hashtag desteği
-- [ ] 71. Location tagging
-- [ ] 72. Post privacy ayarları
-- [ ] 73. Post editing ve deletion
-- [ ] 74. Multiple media post desteği
-- [ ] 75. Post scheduling özelliği
+### Post API Çağrıları
+- [ ] 66. Media upload API call (POST /api/upload)
+- [ ] 67. Create post API call (POST /api/posts)
+- [ ] 68. Get posts feed API call (GET /api/posts/feed)
+- [ ] 69. Get user posts API call (GET /api/posts/user/:id)
+- [ ] 70. Update post API call (PUT /api/posts/:id)
+- [ ] 71. Delete post API call (DELETE /api/posts/:id)
+- [ ] 72. Get post details API call (GET /api/posts/:id)
+- [ ] 73. Search posts API call (GET /api/search/posts)
+- [ ] 74. Get trending hashtags API call (GET /api/hashtags/trending)
+- [ ] 75. Post analytics API call (GET /api/posts/:id/analytics)
 
-### Sosyal Özellikler
-- [ ] 76. Like/Unlike fonksiyonalitesi
-- [ ] 77. Comment ekleme/silme
-- [ ] 78. Reply to comment özelliği
-- [ ] 79. Follow/Unfollow sistemi
-- [ ] 80. User search ve discovery
-- [ ] 81. Hashtag search ve trending
-- [ ] 82. User mention sistemi (@username)
-- [ ] 83. Share post özelliği
-- [ ] 84. Save post to collections
-- [ ] 85. Report ve block kullanıcı
+### Sosyal API Çağrıları
+- [ ] 76. Like post API call (POST /api/likes)
+- [ ] 77. Unlike post API call (DELETE /api/likes/:id)
+- [ ] 78. Add comment API call (POST /api/comments)
+- [ ] 79. Delete comment API call (DELETE /api/comments/:id)
+- [ ] 80. Follow user API call (POST /api/follows)
+- [ ] 81. Unfollow user API call (DELETE /api/follows/:id)
+- [ ] 82. Get followers API call (GET /api/users/:id/followers)
+- [ ] 83. Get following API call (GET /api/users/:id/following)
+- [ ] 84. Search users API call (GET /api/search/users)
+- [ ] 85. Report user/post API call (POST /api/reports)
 
-## 🚀 Gelişmiş Özellikler (86-100)
+## 🚀 Gelişmiş HTTP Entegrasyonları (86-100)
 
-### Stories
-- [ ] 86. Story creation ve upload
-- [ ] 87. Story viewer implementasyonu
-- [ ] 88. Story highlights özelliği
-- [ ] 89. Story reactions (emoji)
-- [ ] 90. Story analytics
+### Stories API Çağrıları
+- [ ] 86. Create story API call (POST /api/stories)
+- [ ] 87. Get stories API call (GET /api/stories)
+- [ ] 88. Delete story API call (DELETE /api/stories/:id)
+- [ ] 89. Story view tracking API call (POST /api/stories/:id/view)
+- [ ] 90. Get story viewers API call (GET /api/stories/:id/viewers)
 
-### Direct Messages
-- [ ] 91. Real-time messaging (WebSocket)
-- [ ] 92. Media sharing in DMs
-- [ ] 93. Message reactions
-- [ ] 94. Message deletion
-- [ ] 95. Typing indicators
+### Messages API Çağrıları
+- [ ] 91. Send message API call (POST /api/messages)
+- [ ] 92. Get conversations API call (GET /api/conversations)
+- [ ] 93. Get messages API call (GET /api/conversations/:id/messages)
+- [ ] 94. Delete message API call (DELETE /api/messages/:id)
+- [ ] 95. Mark as read API call (PUT /api/messages/:id/read)
 
-### Performans ve Optimizasyon
-- [ ] 96. Image caching stratejisi
-- [ ] 97. Lazy loading implementasyonu
-- [ ] 98. Memory management optimizasyonu
-- [ ] 99. Network request optimization
-- [ ] 100. App bundle size optimization
+### HTTP Performans Optimizasyonu
+- [ ] 96. HTTP response caching implementasyonu
+- [ ] 97. Pagination API calls (limit, offset)
+- [ ] 98. HTTP request retry mekanizması
+- [ ] 99. Network connectivity monitoring
+- [ ] 100. API response compression (gzip)
 
 ## 📊 Öncelik Seviyeleri
 
