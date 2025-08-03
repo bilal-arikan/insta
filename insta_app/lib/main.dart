@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'services/api_service.dart';
+import 'services/api_service_wrapper.dart';
+import 'screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,8 +15,14 @@ void main() async {
     print('⚠️ .env file not found, using default values');
   }
   
-  // Initialize API service
-  ApiService().initialize();
+  // Initialize API Services
+  try {
+    await ApiServiceWrapper.initialize();
+    print('✅ API Services initialized successfully');
+  } catch (e) {
+    print('⚠️ API Service initialization failed: $e');
+    print('! Using mock data configuration');
+  }
   
   runApp(
     const ProviderScope(
@@ -274,36 +282,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
-// Placeholder screens
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Instagram'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.favorite_border),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.send),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: const Center(
-        child: Text(
-          'Ana Sayfa\n\nHTTP API entegrasyonu\nburada gerçekleştirilecek',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16),
-        ),
-      ),
-    );
-  }
-}
+// HomeScreen artık ayrı dosyada tanımlı
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});

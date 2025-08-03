@@ -14,7 +14,13 @@ class ApiService {
   static const String _refreshTokenKey = 'refresh_token';
 
   void initialize() {
-    final baseUrl = dotenv.env['API_BASE_URL'] ?? 'http://localhost:3000/api';
+    // Safely get base URL from dotenv or use default
+    String baseUrl = 'http://localhost:3000/api';
+    try {
+      baseUrl = dotenv.env['API_BASE_URL'] ?? 'http://localhost:3000/api';
+    } catch (e) {
+      print('⚠️ DotEnv not initialized, using default API URL');
+    }
     
     _dio = Dio(BaseOptions(
       baseUrl: baseUrl,
@@ -71,7 +77,14 @@ class ApiService {
     ));
 
     // Logging interceptor for development
-    if (dotenv.env['ENVIRONMENT'] == 'development') {
+    bool isDevelopment = false;
+    try {
+      isDevelopment = dotenv.env['ENVIRONMENT'] == 'development';
+    } catch (e) {
+      isDevelopment = true; // Default to development mode if env not available
+    }
+    
+    if (isDevelopment) {
       _dio.interceptors.add(LogInterceptor(
         requestBody: true,
         responseBody: true,
