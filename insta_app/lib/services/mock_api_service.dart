@@ -497,6 +497,111 @@ class MockApiService {
     };
   }
   
+  /// Mock Auth Methods
+  
+  /// Mevcut kullanıcı bilgilerini getir
+  static Future<Map<String, dynamic>> getCurrentUser() async {
+    await _simulateNetworkDelay();
+    
+    if (_shouldSimulateError(errorRate: 0.05)) {
+      throw Exception('Failed to get current user');
+    }
+    
+    // Varsayılan olarak ilk kullanıcıyı döndür
+    final currentUser = _mockUsers.first;
+    
+    return {
+      'success': true,
+      'data': {
+        'user': currentUser,
+      },
+      'message': 'User data retrieved successfully',
+    };
+  }
+  
+  /// Şifre sıfırlama (token ile)
+  static Future<Map<String, dynamic>> resetPassword({
+    required String token,
+    required String newPassword,
+  }) async {
+    await _simulateNetworkDelay();
+    
+    if (_shouldSimulateError(errorRate: 0.05)) {
+      throw Exception('Failed to reset password');
+    }
+    
+    if (token.isEmpty || newPassword.isEmpty) {
+      return {
+        'success': false,
+        'message': 'Token and new password are required',
+      };
+    }
+    
+    if (newPassword.length < 6) {
+      return {
+        'success': false,
+        'message': 'Password must be at least 6 characters',
+      };
+    }
+    
+    return {
+      'success': true,
+      'message': 'Password has been reset successfully',
+    };
+  }
+  
+  /// Email doğrulama
+  static Future<Map<String, dynamic>> verifyEmail({required String token}) async {
+    await _simulateNetworkDelay();
+    
+    if (_shouldSimulateError(errorRate: 0.05)) {
+      throw Exception('Failed to verify email');
+    }
+    
+    if (token.isEmpty) {
+      return {
+        'success': false,
+        'message': 'Verification token is required',
+      };
+    }
+    
+    return {
+      'success': true,
+      'message': 'Email has been verified successfully',
+    };
+  }
+  
+  /// Şifre değiştirme
+  static Future<Map<String, dynamic>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    await _simulateNetworkDelay();
+    
+    if (_shouldSimulateError(errorRate: 0.05)) {
+      throw Exception('Failed to change password');
+    }
+    
+    if (currentPassword.isEmpty || newPassword.isEmpty) {
+      return {
+        'success': false,
+        'message': 'Current password and new password are required',
+      };
+    }
+    
+    if (newPassword.length < 6) {
+      return {
+        'success': false,
+        'message': 'New password must be at least 6 characters',
+      };
+    }
+    
+    return {
+      'success': true,
+      'message': 'Password has been changed successfully',
+    };
+  }
+  
   /// Mock Utility Methods
   
   /// Mock data reset (test için)

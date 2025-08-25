@@ -5,6 +5,11 @@ import 'api_service_wrapper.dart';
 
 class AuthService {
   static final ApiService _apiService = ApiService();
+  
+  // Initialize API service
+  static void initialize() {
+    _apiService.initialize();
+  }
 
   /// Kullanıcı kaydı
   static Future<AuthResult> register({
@@ -20,20 +25,22 @@ class AuthService {
         password: password,
         fullName: fullName,
       );
-      
+
       if (result['success'] == true) {
         final userData = result['data'];
         final user = UserModel.fromJson(userData['user']);
-        
+
         // Token'ları kaydet (sadece gerçek API'de)
-        if (!ApiServiceWrapper.isUsingMockData && userData['access_token'] != null) {
-          await _apiService.saveTokens(
-            userData['access_token'],
-            userData['refresh_token'],
-          );
+        if (!ApiServiceWrapper.isUsingMockData &&
+            userData['access_token'] != null) {
+          await _apiService.setToken(userData['access_token']);
+          await _apiService.setRefreshToken(userData['refresh_token']);
         }
-        
-        return AuthResult.success(user, result['message'] ?? 'Registration successful');
+
+        return AuthResult.success(
+          user,
+          result['message'] ?? 'Registration successful',
+        );
       } else {
         return AuthResult.failure(result['message'] ?? 'Registration failed');
       }
@@ -46,20 +53,22 @@ class AuthService {
   static Future<AuthResult> login(String email, String password) async {
     try {
       final result = await ApiServiceWrapper.login(email, password);
-      
+
       if (result['success'] == true) {
         final userData = result['data'];
         final user = UserModel.fromJson(userData['user']);
-        
+
         // Token'ları kaydet (sadece gerçek API'de)
-        if (!ApiServiceWrapper.isUsingMockData && userData['access_token'] != null) {
-          await _apiService.saveTokens(
-            userData['access_token'],
-            userData['refresh_token'],
-          );
+        if (!ApiServiceWrapper.isUsingMockData &&
+            userData['access_token'] != null) {
+          await _apiService.setToken(userData['access_token']);
+          await _apiService.setRefreshToken(userData['refresh_token']);
         }
-        
-        return AuthResult.success(user, result['message'] ?? 'Login successful');
+
+        return AuthResult.success(
+          user,
+          result['message'] ?? 'Login successful',
+        );
       } else {
         return AuthResult.failure(result['message'] ?? 'Login failed');
       }
@@ -69,7 +78,7 @@ class AuthService {
   }
 
   // Logout user
-  Future<void> logout() async {
+  static Future<void> logout() async {
     try {
       // Call logout endpoint to invalidate token on server
       await _apiService.post('/auth/logout');
@@ -82,24 +91,23 @@ class AuthService {
   }
 
   // Check if user is logged in
-  Future<bool> isLoggedIn() async {
+  static Future<bool> isLoggedIn() async {
     final token = await _apiService.getToken();
     return token != null;
   }
 
   // Get current user profile
-  Future<UserResult> getCurrentUser() async {
+  static Future<UserResult> getCurrentUser() async {
     try {
-      final response = await _apiService.get('/auth/me');
-
-      if (response.statusCode == 200) {
-        final user = UserModel.fromJson(response.data['user']);
+      final result = await ApiServiceWrapper.getCurrentUser();
+      
+      if (result['success'] == true) {
+        final userData = result['data'];
+        final user = UserModel.fromJson(userData['user']);
         return UserResult.success(user);
       } else {
-        return UserResult.failure('Kullanıcı bilgileri alınamadı');
+        return UserResult.failure(result['message'] ?? 'Kullanıcı bilgileri alınamadı');
       }
-    } on DioException catch (e) {
-      return UserResult.failure(_apiService.getErrorMessage(e));
     } catch (e) {
       return UserResult.failure('Beklenmeyen hata: $e');
     }
@@ -109,11 +117,15 @@ class AuthService {
   static Future<ApiResult> forgotPassword(String email) async {
     try {
       final result = await ApiServiceWrapper.forgotPassword(email);
-      
+
       if (result['success'] == true) {
-        return ApiResult.success(result['message'] ?? 'Password reset email sent successfully');
+        return ApiResult.success(
+          result['message'] ?? 'Password reset email sent successfully',
+        );
       } else {
-        return ApiResult.failure(result['message'] ?? 'Failed to send reset email');
+        return ApiResult.failure(
+          result['message'] ?? 'Failed to send reset email',
+        );
       }
     } catch (e) {
       return ApiResult.failure('Password reset error: $e');
@@ -121,72 +133,57 @@ class AuthService {
   }
 
   // Reset password
-  Future<ApiResult> resetPassword({
+  static Future<ApiResult> resetPassword({
     required String token,
     required String newPassword,
   }) async {
     try {
-      final response = await _apiService.post(
-        '/auth/reset-password',
-        data: {'token': token, 'password': newPassword},
+      final result = await ApiServiceWrapper.resetPassword(
+        token: token,
+        newPassword: newPassword,
       );
 
-      if (response.statusCode == 200) {
-        return ApiResult.success(response.data['message']);
+      if (result['success'] == true) {
+        return ApiResult.success(result['message'] ?? 'Şifre başarıyla sıfırlandı');
       } else {
-        return ApiResult.failure(
-          response.data['error'] ?? 'Şifre sıfırlama başarısız',
-        );
+        return ApiResult.failure(result['message'] ?? 'Şifre sıfırlama başarısız');
       }
-    } on DioException catch (e) {
-      return ApiResult.failure(_apiService.getErrorMessage(e));
     } catch (e) {
       return ApiResult.failure('Beklenmeyen hata: $e');
     }
   }
 
   // Verify email
-  Future<ApiResult> verifyEmail({required String token}) async {
+  static Future<ApiResult> verifyEmail({required String token}) async {
     try {
-      final response = await _apiService.post(
-        '/auth/verify-email',
-        data: {'token': token},
-      );
+      final result = await ApiServiceWrapper.verifyEmail(token: token);
 
-      if (response.statusCode == 200) {
-        return ApiResult.success(response.data['message']);
+      if (result['success'] == true) {
+        return ApiResult.success(result['message'] ?? 'Email başarıyla doğrulandı');
       } else {
-        return ApiResult.failure(
-          response.data['error'] ?? 'Email doğrulama başarısız',
-        );
+        return ApiResult.failure(result['message'] ?? 'Email doğrulama başarısız');
       }
-    } on DioException catch (e) {
-      return ApiResult.failure(_apiService.getErrorMessage(e));
     } catch (e) {
       return ApiResult.failure('Beklenmeyen hata: $e');
     }
   }
 
   // Change password
-  Future<ApiResult> changePassword({
+  static Future<ApiResult> changePassword({
     required String currentPassword,
     required String newPassword,
   }) async {
     try {
-      final response = await _apiService.put(
-        '/auth/change-password',
-        data: {'currentPassword': currentPassword, 'newPassword': newPassword},
+      final result = await ApiServiceWrapper.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
       );
 
-      if (response.statusCode == 200) {
-        return ApiResult.success(response.data['message']);
+      if (result['success'] == true) {
+        return ApiResult.success(result['message'] ?? 'Şifre başarıyla değiştirildi');
       } else {
-        return ApiResult.failure(
-          response.data['error'] ?? 'Şifre değiştirme başarısız',
-        );
+        return ApiResult.failure(result['message'] ?? 'Şifre değiştirme başarısız');
       }
-    } on DioException catch (e) {
-      return ApiResult.failure(_apiService.getErrorMessage(e));
     } catch (e) {
       return ApiResult.failure('Beklenmeyen hata: $e');
     }
@@ -201,7 +198,10 @@ class AuthResult {
   final String? message;
 
   AuthResult.success(this.user, this.message) : isSuccess = true, error = null;
-  AuthResult.failure(this.error) : isSuccess = false, user = null, message = null;
+  AuthResult.failure(this.error)
+    : isSuccess = false,
+      user = null,
+      message = null;
 }
 
 class UserResult {

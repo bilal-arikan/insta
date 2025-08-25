@@ -326,6 +326,110 @@ class ApiServiceWrapper {
     }
   }
   
+  // Auth Methods
+  
+  /// Mevcut kullanıcı bilgilerini getir
+  static Future<Map<String, dynamic>> getCurrentUser() async {
+    if (_useMockData) {
+      return await MockApiService.getCurrentUser();
+    } else {
+      try {
+        final response = await _realApiService.get('/auth/me');
+        
+        return {
+          'success': response.statusCode == 200,
+          'data': response.data,
+          'message': 'User data retrieved successfully',
+        };
+      } catch (e) {
+        return {
+          'success': false,
+          'message': 'API Error: $e',
+        };
+      }
+    }
+  }
+  
+  /// Şifre sıfırlama (token ile)
+  static Future<Map<String, dynamic>> resetPassword({
+    required String token,
+    required String newPassword,
+  }) async {
+    if (_useMockData) {
+      return await MockApiService.resetPassword(token: token, newPassword: newPassword);
+    } else {
+      try {
+        final response = await _realApiService.post('/auth/reset-password', data: {
+          'token': token,
+          'password': newPassword,
+        });
+        
+        return {
+          'success': response.statusCode == 200,
+          'message': response.data['message'] ?? 'Password reset successful',
+        };
+      } catch (e) {
+        return {
+          'success': false,
+          'message': 'API Error: $e',
+        };
+      }
+    }
+  }
+  
+  /// Email doğrulama
+  static Future<Map<String, dynamic>> verifyEmail({required String token}) async {
+    if (_useMockData) {
+      return await MockApiService.verifyEmail(token: token);
+    } else {
+      try {
+        final response = await _realApiService.post('/auth/verify-email', data: {
+          'token': token,
+        });
+        
+        return {
+          'success': response.statusCode == 200,
+          'message': response.data['message'] ?? 'Email verification successful',
+        };
+      } catch (e) {
+        return {
+          'success': false,
+          'message': 'API Error: $e',
+        };
+      }
+    }
+  }
+  
+  /// Şifre değiştirme
+  static Future<Map<String, dynamic>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    if (_useMockData) {
+      return await MockApiService.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      );
+    } else {
+      try {
+        final response = await _realApiService.put('/auth/change-password', data: {
+          'currentPassword': currentPassword,
+          'newPassword': newPassword,
+        });
+        
+        return {
+          'success': response.statusCode == 200,
+          'message': response.data['message'] ?? 'Password changed successfully',
+        };
+      } catch (e) {
+        return {
+          'success': false,
+          'message': 'API Error: $e',
+        };
+      }
+    }
+  }
+  
   // Utility Methods
   
   /// Network connectivity check
