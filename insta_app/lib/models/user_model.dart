@@ -34,7 +34,7 @@ class UserModel {
   // Factory constructor to create UserModel from JSON
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'] as int,
+      id: int.parse(json['id'].toString()),
       username: json['username'] as String,
       email: json['email'] as String,
       fullName: json['fullName'] as String?,
@@ -46,11 +46,13 @@ class UserModel {
       followingCount: json['followingCount'] as int? ?? 0,
       postsCount: json['postsCount'] as int? ?? 0,
       lastLogin: json['lastLogin'] != null 
-          ? DateTime.parse(json['lastLogin'] as String)
+          ? DateTime.parse(json['lastLogin'].toString())
           : null,
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'].toString())
+          : DateTime.now(),
       updatedAt: json['updatedAt'] != null 
-          ? DateTime.parse(json['updatedAt'] as String)
+          ? DateTime.parse(json['updatedAt'].toString())
           : null,
     );
   }
